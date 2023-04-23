@@ -66,12 +66,8 @@ class Item(models.Model):
 
 
 class Inventory(models.Model):
-    # itemName = models.ForeignKey(Item, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     qty = models.DecimalField(max_digits=12, decimal_places=1)
-
-    # def __str__(self):
-    #     return f"{self.item} ({self.quantity})"
 
 
 class StockedIn(models.Model):
@@ -82,9 +78,19 @@ class StockedIn(models.Model):
     qty = models.DecimalField(max_digits=12, decimal_places=1)
 
 
+# class RepackedList(models.Model):
+#     items = models.TextField()
+#     qty = models.TextField()
+#     reason = models.TextField()
+
+
 class Repacked(models.Model):
-    item = models.ForeignKey(Inventory, on_delete=models.CASCADE)
-    reason = models.CharField(max_length=100)
+    # items = models.ForeignKey(RepackedList, on_delete=models.CASCADE)
+    items = models.TextField()
+    units = models.TextField()
+    qty = models.TextField()
+    instance = models.IntegerField()
+    reason = models.TextField()
 
 
 class Distributed(models.Model):

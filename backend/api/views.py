@@ -408,6 +408,44 @@ def StockedInAPI(request, pk=0):
         return Response("Stocked in Item Deleted Successfully")
 
 
+# @api_view(['GET', 'POST', 'PUT', 'DELETE'])
+# def RepackedListAPI(request, pk=0):
+#     if request.method == 'GET':
+#         repacked = Repacked.objects.all()
+#         repacked_serializer = RepackedSerializer(
+#             repacked, many=True)
+#         return Response(repacked_serializer.data)
+
+#     elif request.method == 'POST':
+#         repacked_serializer = RepackedSerializer(data=request.data)
+#         if repacked_serializer.is_valid():
+#             repacked_serializer.save()
+#             return Response("Data Added Successfully", status=status.HTTP_201_CREATED)
+#         return Response(repacked_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     elif request.method == 'PUT':
+#         try:
+#             repacked = Repacked.objects.get(id=pk)
+#         except Repacked.DoesNotExist:
+#             return Response("Repacked Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+#         repacked_serializer = RepackedSerializer(
+#             repacked, data=request.data)
+#         if repacked_serializer.is_valid():
+#             repacked_serializer.save()
+#             return Response("Updated Successfully")
+#         return Response(repacked_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     elif request.method == 'DELETE':
+#         try:
+#             repacked = Repacked.objects.get(id=pk)
+#         except Repacked.DoesNotExist:
+#             return Response("Repacked Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+#         repacked.delete()
+#         return Response("Repacked Item Deleted Successfully")
+
+
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def RepackedAPI(request, pk=0):
     if request.method == 'GET':

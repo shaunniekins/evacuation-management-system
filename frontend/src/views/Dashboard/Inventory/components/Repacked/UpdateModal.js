@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Button,
@@ -13,13 +13,19 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
-import { StockinAdd } from "api/stockinAPI";
-import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
+import { StockinUpdate } from "api/stockinAPI";
+import { ItemList } from "api/itemAPI";
+import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 
-const AddModal = ({
+const UpdateModal = ({
   addEntries,
-  // itemName,
-  // itemUnit,
+  id,
+  givenBy,
+  donor,
+  dateReceived,
+  itemID,
+  // unit,
+  qty,
   isOpen,
   onClose,
   initialRef,
@@ -32,15 +38,19 @@ const AddModal = ({
     const givenBy = event.target.givenBy.value;
     const donor = event.target.donor.value;
     const dateReceived = event.target.dateReceived.value;
-    const itemIDValueSubmit = itemIDValue;
-    const qty = event.target.qty.value;
+    const itemIDValueSubmit = itemIDValue; // assume this function retrieves the item ID
+    const preQty = qty;
+    const newQty = event.target.qty.value;
 
     try {
-      const result = await StockinAdd(
+      const result = await StockinUpdate(
+        id,
         givenBy,
         donor,
         dateReceived,
+        // event.target.item.value,
         itemIDValueSubmit,
+        // event.target.unit.value,
         qty
       ); // call the API function
     } catch (error) {
@@ -48,35 +58,41 @@ const AddModal = ({
     }
 
     try {
-      let itemExists = false;
-
       inventoryList.map(async (entry) => {
-        if (entry.item === parseInt(itemIDValueSubmit)) {
-          itemExists = true;
-          const newQty = parseFloat(entry.qty) + parseFloat(qty);
-          const resultInventory = await InventoryUpdate(
-            entry.id,
-            itemIDValueSubmit,
-            newQty
-          );
-        }
+        // if (entry.item === parseInt(itemIDValueSubmit)) {
+        let computedQty =
+          parseFloat(entry.qty) - parseFloat(preQty) + parseFloat(newQty);
+        const resultInventory = await InventoryUpdate(
+          entry.id,
+          itemIDValueSubmit,
+          computedQty
+        );
+        // }
       });
-
-      if (!itemExists) {
-        const resultInventory = await InventoryAdd(itemIDValueSubmit, qty);
-      }
 
       onClose();
     } catch (error) {
       alert("Failed");
     }
   };
+  const [itemName, setItemName] = useState("");
+  const [itemUnit, setItemUnit] = useState("");
+  const [unitValue, setUnitValue] = useState("itemUnit");
 
-  const [date, setDate] = useState(new Date());
-  const formattedDate = date.toISOString().slice(0, 10);
+  const entry1 = ItemList();
 
-  const [unitValue, setUnitValue] = useState("");
-  const [itemIDValue, setItemIDValue] = useState("");
+  const selectedItem = entry1.find((item) => item.id === itemID);
+
+  useEffect(() => {
+    if (selectedItem) {
+      setItemName(selectedItem.name);
+      setUnitValue(selectedItem.unit);
+    } else {
+      setItemName("");
+      setUnitValue("");
+    }
+  }, [selectedItem]);
+  const [itemIDValue, setItemIDValue] = useState(itemID);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -110,7 +126,7 @@ const AddModal = ({
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>
-          <ModalHeader>Stock In</ModalHeader>
+          <ModalHeader>Update Stock-in Item</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
@@ -119,6 +135,8 @@ const AddModal = ({
                 required
                 id="givenBy-field"
                 name="givenBy"
+                defaultValue={givenBy}
+                ref={initialRef}
                 placeholder="--Select option--">
                 <option value="Government">Government</option>
                 <option value="Private">Private</option>
@@ -128,16 +146,17 @@ const AddModal = ({
                 type="text"
                 id="donor-field"
                 name="donor"
+                defaultValue={donor}
                 ref={initialRef}
                 placeholder="Name (Optional)"
               />
-              <FormLabel>Date Received</FormLabel>
+              <FormLabel>Date received</FormLabel>
               <Input
                 required
                 type="date"
                 id="dateReceived-field"
                 name="dateReceived"
-                defaultValue={formattedDate}
+                defaultValue={dateReceived}
                 ref={initialRef}
                 placeholder="Date Received"
               />
@@ -147,6 +166,7 @@ const AddModal = ({
                   required
                   id="item-field"
                   name="item"
+                  defaultValue={itemName}
                   placeholder="--Select option--"
                   onChange={handleSelectChange}>
                   {addEntries.map((entry) => (
@@ -164,19 +184,39 @@ const AddModal = ({
                   type="text"
                   id="unit-field"
                   name="unit"
+                  // defaultValue={unitValue}
                   ref={initialRef}
                   placeholder="Unit"
                   w={"20%"}
                   value={unitValue}
                 />
               </Flex>
-
+              {/* <Input
+                required
+                type="text"
+                id="item-field"
+                name="item"
+                defaultValue={item}
+                ref={initialRef}
+                placeholder="Item"
+              /> */}
+              {/* <FormLabel>Unit</FormLabel>
+              <Input
+                required
+                type="text"
+                id="unit-field"
+                name="unit"
+                defaultValue={unit}
+                ref={initialRef}
+                placeholder="Unit"
+              /> */}
               <FormLabel>Quantity</FormLabel>
               <Input
                 required
-                type="number"
+                type="text"
                 id="qty-field"
                 name="qty"
+                defaultValue={qty}
                 ref={initialRef}
                 placeholder="Quantity"
               />
@@ -185,7 +225,7 @@ const AddModal = ({
 
           <ModalFooter>
             <Button colorscheme="blue" mr={3} type="submit">
-              Add
+              Update
             </Button>
             <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
@@ -195,4 +235,4 @@ const AddModal = ({
   );
 };
 
-export default AddModal;
+export default UpdateModal;

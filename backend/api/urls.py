@@ -44,6 +44,9 @@ urlpatterns = [
     path('stockin/', views.StockedInAPI),
     path('stockin/<int:pk>', views.StockedInAPI),
 
+    # path('repackedlist/', views.RepackedListAPI),
+    # path('repackedlist/<int:pk>', views.RepackedListAPI),
+
     path('repacked/', views.RepackedAPI),
     path('repacked/<int:pk>', views.RepackedAPI),
 
@@ -63,7 +66,3 @@ urlpatterns = [
     path('barangay_item', views.barangay_items),
     path('municipality_item', views.municipality_items)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL,
-#                           document_root=settings.MEDIA_ROOT)

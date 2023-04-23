@@ -95,15 +95,29 @@ class StockedInSerializer(serializers.ModelSerializer):
         return obj.item.unit
 
 
-class RepackedSerializer(serializers.ModelSerializer):
-    item = InventorySerializer(read_only=True)
-    unit = serializers.CharField(source='item.item.unit', read_only=True)
-    qty = serializers.DecimalField(
-        source='item.qty', max_digits=12, decimal_places=1, read_only=True)
+# class RepackedListSerializerList(serializers.ModelSerializer):
+#     class Meta:
+#         model = RepackedList
+#         fields = ('id', 'items', 'qty', 'reason')
 
+    # def get_unit(self, obj):
+    #     return obj.items.qty
+
+
+class RepackedSerializer(serializers.ModelSerializer):
+    # items = serializers.PrimaryKeyRelatedField(
+    #     queryset=RepackedList.objects.all())
+    # qty = serializers.SerializerMethodField()
+
+    # class Meta:
+    #     model = Repacked
+    #     fields = ('id', 'items', 'qty', 'instance')
+
+    # def get_qty(self, obj):
+    #     return obj.items.qty
     class Meta:
         model = Repacked
-        fields = ('id', 'item', 'qty', 'unit', 'reason')
+        fields = ('id', 'items', 'units', 'qty', 'instance', 'reason')
 
 
 class DistributeReliefGoodsSerializer(serializers.ModelSerializer):

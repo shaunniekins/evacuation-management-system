@@ -6,6 +6,7 @@ import React from "react";
 import ViewStockin from "./components/Stockin/View";
 import ViewCashDonation from "./components/CashDonation/View";
 import ViewAddItem from "./components/AddItem/View";
+import ViewRepacked from "./components/Repacked/View";
 
 function Calamity() {
   return (
@@ -26,6 +27,9 @@ function Calamity() {
           </TabPanel>
           <TabPanel>
             <ViewCashDonation />
+          </TabPanel>
+          <TabPanel>
+            <ViewRepacked />
           </TabPanel>
         </TabPanels>
       </Tabs>
