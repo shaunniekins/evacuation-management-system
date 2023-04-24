@@ -10,7 +10,7 @@ class CustomUser(AbstractUser):
     image = models.ImageField(upload_to='users/', null=True, blank=True)
 
 
-class Evacuees(models.Model):
+class Resident(models.Model):
     id = models.AutoField(primary_key=True)
     last_name = models.CharField(max_length=50)
     first_name = models.CharField(max_length=50)
@@ -49,6 +49,12 @@ class Evacuation(models.Model):
     municipality = models.CharField(max_length=30)
     barangay = models.CharField(max_length=30)
     capacity = models.IntegerField()
+
+
+class ResidentInEvacuation(models.Model):
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
+    evacuation = models.ForeignKey(Evacuation, on_delete=models.CASCADE)
+    date = models.DateField()
 
 
 class Calamity(models.Model):

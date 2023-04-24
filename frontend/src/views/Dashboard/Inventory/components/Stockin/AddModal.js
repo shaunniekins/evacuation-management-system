@@ -15,9 +15,10 @@ import {
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { StockinAdd } from "api/stockinAPI";
 import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
+import { ItemList } from "api/itemAPI";
 
 const AddModal = ({
-  addEntries,
+  // addEntries,
   // itemName,
   // itemUnit,
   isOpen,
@@ -25,6 +26,8 @@ const AddModal = ({
   initialRef,
   finalRef,
 }) => {
+  const addEntries = ItemList();
+
   const inventoryList = InventoryList();
 
   const handleSubmit = async (event) => {

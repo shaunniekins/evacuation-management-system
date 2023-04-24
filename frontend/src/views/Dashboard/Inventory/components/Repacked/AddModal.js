@@ -24,7 +24,7 @@ import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
 import { ItemList } from "api/itemAPI";
 
 const AddModal = ({
-  inventoryEntries,
+  // inventoryEntries,
   isOpen,
   onClose,
   initialRef,
@@ -40,12 +40,20 @@ const AddModal = ({
 
   const idConvertName = (itemID, itemUnit, itemQty) => {
     const selectedItem = entry1.find((item) => item.id === itemID);
-    return `- ${selectedItem.name}: ${itemUnit}${itemQty}`;
+    if (selectedItem) {
+      return `- ${selectedItem.name}: ${itemUnit}${itemQty}`;
+    } else {
+      return "";
+    }
   };
 
   const idConvertNameOption = (itemID) => {
     const selectedItem = entry1.find((item) => item.id === itemID);
-    return `${selectedItem.name}`;
+    if (selectedItem) {
+      return `${selectedItem.name}`;
+    } else {
+      return "";
+    }
   };
 
   const [inputs, setInputs] = useState([{ id: 1, item: "", qty: "" }]);
@@ -155,12 +163,14 @@ const AddModal = ({
                     columnWidth: "50%",
                   }}>
                   {inventoryList
-                    .filter((item) => parseFloat(item.qty) !== 0)
-                    .map((item) => (
-                      <Text key={item.id}>
-                        {idConvertName(item.item, item.qty, item.unit)}
-                      </Text>
-                    ))}
+                    ? inventoryList
+                        .filter((item) => parseFloat(item.qty) !== 0)
+                        .map((item) => (
+                          <Text key={item.id}>
+                            {idConvertName(item.item, item.qty, item.unit)}
+                          </Text>
+                        ))
+                    : ""}
                 </Box>
               </CardBody>
             </Card>
@@ -188,15 +198,17 @@ const AddModal = ({
                       onChange={(event) => handleInputChange(event, input.id)}
                       value={input.item}>
                       {inventoryList
-                        .filter((item) => parseFloat(item.qty) !== 0)
-                        .map((item) => (
-                          <option
-                            key={item.id}
-                            value={item.item}
-                            data-id={item.id}>
-                            {idConvertNameOption(item.item)}
-                          </option>
-                        ))}
+                        ? inventoryList
+                            .filter((item) => parseFloat(item.qty) !== 0)
+                            .map((item) => (
+                              <option
+                                key={item.id}
+                                value={item.item}
+                                data-id={item.id}>
+                                {idConvertNameOption(item.item)}
+                              </option>
+                            ))
+                        : ""}
                     </Select>
                     <Input
                       required

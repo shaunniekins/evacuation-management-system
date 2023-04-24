@@ -10,18 +10,10 @@ function Tables() {
     <Flex direction="column" pt={{ base: "120px", md: "75px" }} mt="24px">
       <Tabs align="end" variant="soft-rounded" colorScheme="blue">
         <TabList>
-          {/* <Tab>Inventory</Tab> */}
           <Tab>Evacuees' List</Tab>
           <Tab>Reports by Category</Tab>
         </TabList>
         <TabPanels>
-          {/* <TabPanel>
-            <Projects
-              title={"Projects Table"}
-              captions={["Companies", "Budget", "Status", "Completion", ""]}
-              data={dashboardTableData}
-            />
-          </TabPanel> */}
           <TabPanel>
             <View />
           </TabPanel>

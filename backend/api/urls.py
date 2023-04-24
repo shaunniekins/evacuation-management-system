@@ -14,14 +14,13 @@ urlpatterns = [
     # path('', views.getRoutes),
 
     path('users/', CustomUserList.as_view(), name='user-list'),
-    # add new url pattern for detail view
     path('users/<int:pk>', CustomUserList.as_view(), name='user-detail'),
 
     # path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    path('evacuee/', views.EvacueesAPI),
-    path('evacuee/<int:pk>', views.EvacueesAPI),
+    path('resident/', views.ResidentAPI),
+    path('resident/<int:pk>', views.ResidentAPI),
 
     path('municipality/', views.MunicipalityAPI),
     path('municipality/<int:pk>', views.MunicipalityAPI),
@@ -31,6 +30,10 @@ urlpatterns = [
 
     path('evacuation/', views.EvacuationAPI),
     path('evacuation/<int:pk>', views.EvacuationAPI),
+
+    path('resident_evacuation/', views.ResidentInEvacuationAPI),
+    path('resident_evacuation/<int:pk>',
+         views.ResidentInEvacuationAPI),
 
     path('calamity/', views.CalamityAPI),
     path('calamity/<int:pk>', views.CalamityAPI),

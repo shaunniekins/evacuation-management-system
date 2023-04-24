@@ -8,7 +8,7 @@ export const EvacueeList = () => {
   }, []);
 
   const getEvacuee = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/evacuee");
+    let response = await fetch("http://127.0.0.1:8000/api/resident");
     let data = await response.json();
     setEntries(data);
   };
@@ -34,7 +34,7 @@ export const evacueeAdd = async (
   household_num
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/evacuee/", {
+    const response = await fetch("http://127.0.0.1:8000/api/resident/", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -86,7 +86,7 @@ export const evacueeUpdate = async (
   household_num
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/evacuee/" + id, {
+    const response = await fetch("http://127.0.0.1:8000/api/resident/" + id, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -121,7 +121,7 @@ export const evacueeUpdate = async (
 
 export const evacueeDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/evacuee/" + id, {
+    fetch("http://127.0.0.1:8000/api/resident/" + id, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

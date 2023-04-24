@@ -1,7 +1,7 @@
 from rest_framework import fields, serializers
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from backend.models import Evacuees, Municipality, Barangay, Evacuation, Calamity, Item, Inventory, StockedIn, Repacked, Distributed, CashDonation
+from backend.models import Resident, Municipality, Barangay, Evacuation, ResidentInEvacuation, Calamity, Item, Inventory, StockedIn, Repacked, Distributed, CashDonation
 
 # from rest_framework import serializers
 from backend.models import CustomUser
@@ -19,9 +19,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
                   'email', 'is_staff', 'municipality', 'barangay', 'position', 'contact_number', 'image')
 
 
-class EvacueesSerializer(serializers.ModelSerializer):
+class ResidentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Evacuees
+        model = Resident
         fields = ('id',
                   'last_name',
                   'first_name',
@@ -56,6 +56,17 @@ class EvacuationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evacuation
         fields = ('id', 'name', 'municipality', 'barangay', 'capacity')
+
+
+class ResidentInEvacuationSerializer(serializers.ModelSerializer):
+    resident = serializers.PrimaryKeyRelatedField(
+        queryset=Resident.objects.all())
+    evacuation = serializers.PrimaryKeyRelatedField(
+        queryset=Evacuation.objects.all())
+
+    class Meta:
+        model = ResidentInEvacuation
+        fields = ('id', 'resident', 'evacuation', 'date')
 
 
 class CalamitySerializer(serializers.ModelSerializer):

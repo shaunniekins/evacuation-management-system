@@ -21,9 +21,9 @@ from django.core.files.storage import default_storage
 from rest_framework.generics import CreateAPIView
 # from rest_framework.response import Response
 
-from backend.models import Evacuees, Municipality, Barangay, Evacuation, Calamity, Item, Inventory, StockedIn, Repacked, Distributed, CashDonation
+from backend.models import Resident, Municipality, Barangay, Evacuation, ResidentInEvacuation, Calamity, Item, Inventory, StockedIn, Repacked, Distributed, CashDonation
 
-from backend.api.serializers import EvacueesSerializer, MunicipalitySerializer, BarangaySerializer, EvacuationSerializer, CalamitySerializer, ItemSerializer, InventorySerializer, StockedInSerializer, RepackedSerializer, DistributeReliefGoodsSerializer, CashDonationSerializer
+from backend.api.serializers import ResidentSerializer, MunicipalitySerializer, BarangaySerializer, EvacuationSerializer, ResidentInEvacuationSerializer, CalamitySerializer, ItemSerializer, InventorySerializer, StockedInSerializer, RepackedSerializer, DistributeReliefGoodsSerializer, CashDonationSerializer
 
 from .evacuees import get_evacuee_count, get_family_count, get_male_count, get_female_count, get_family_count, get_evacuation_center_count, get_barangay_count, get_barangay_items, get_municipality_items
 
@@ -102,14 +102,14 @@ class CustomUserList(generics.ListCreateAPIView):
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
-def EvacueesAPI(request, pk=0):
+def ResidentAPI(request, pk=0):
     if request.method == 'GET':
-        evacuees = Evacuees.objects.all()
-        evacuees_serializer = EvacueesSerializer(evacuees, many=True)
+        evacuees = Resident.objects.all()
+        evacuees_serializer = ResidentSerializer(evacuees, many=True)
         return Response(evacuees_serializer.data)
 
     elif request.method == 'POST':
-        evacuees_serializer = EvacueesSerializer(data=request.data)
+        evacuees_serializer = ResidentSerializer(data=request.data)
         if evacuees_serializer.is_valid():
             evacuees_serializer.save()
             return Response("Data Added Successfully", status=status.HTTP_201_CREATED)
@@ -117,11 +117,11 @@ def EvacueesAPI(request, pk=0):
 
     elif request.method == 'PUT':
         try:
-            evacuees = Evacuees.objects.get(id=pk)
-        except Evacuees.DoesNotExist:
-            return Response("Evacuee Not Found", status=status.HTTP_404_NOT_FOUND)
+            evacuees = Resident.objects.get(id=pk)
+        except Resident.DoesNotExist:
+            return Response("Resident Not Found", status=status.HTTP_404_NOT_FOUND)
 
-        evacuees_serializer = EvacueesSerializer(
+        evacuees_serializer = ResidentSerializer(
             evacuees, data=request.data)
         if evacuees_serializer.is_valid():
             evacuees_serializer.save()
@@ -130,12 +130,12 @@ def EvacueesAPI(request, pk=0):
 
     elif request.method == 'DELETE':
         try:
-            evacuees = Evacuees.objects.get(id=pk)
-        except Evacuees.DoesNotExist:
-            return Response("Evacuee Not Found", status=status.HTTP_404_NOT_FOUND)
+            evacuees = Resident.objects.get(id=pk)
+        except Resident.DoesNotExist:
+            return Response("Resident Not Found", status=status.HTTP_404_NOT_FOUND)
 
         evacuees.delete()
-        return Response("Evacuee Info Deleted Successfully")
+        return Response("Resident Info Deleted Successfully")
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
@@ -252,6 +252,48 @@ def EvacuationAPI(request, pk=0):
 
         evacuation.delete()
         return Response(evacuation_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def ResidentInEvacuationAPI(request, pk=0):
+    queryset = ResidentInEvacuation.objects.all()
+    # should be an instance of the serializer class
+    serializer_class = ResidentInEvacuationSerializer
+
+    if request.method == 'GET':
+        items = ResidentInEvacuation.objects.all()
+        item_serializer = ResidentInEvacuationSerializer(items, many=True)
+        return Response(item_serializer.data)
+
+    elif request.method == 'POST':
+        item_serializer = ResidentInEvacuationSerializer(data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response("Data Added Successfully", status=status.HTTP_201_CREATED)
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PUT':
+        try:
+            item = ResidentInEvacuation.objects.get(id=pk)
+        except ResidentInEvacuation.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        item_serializer = ResidentInEvacuationSerializer(
+            item, data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response("Updated Successfully")
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            item = ResidentInEvacuation.objects.get(id=pk)
+            # calamity.delete()
+        except ResidentInEvacuation.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        item.delete()
+        return Response("Stocked in Item Deleted Successfully")
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])

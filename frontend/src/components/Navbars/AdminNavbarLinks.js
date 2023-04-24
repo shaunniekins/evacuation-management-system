@@ -165,6 +165,7 @@ export default function HeaderLinks(props) {
               </Flex>
             )}
           </MenuItem>
+          <MenuItem>Change Password</MenuItem>
           <MenuItem onClick={logoutUser}>Logout</MenuItem>
         </MenuList>
       </Menu>

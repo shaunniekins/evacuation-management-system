@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
 import { useHistory } from "react-router-dom";
 import { position } from "@chakra-ui/system";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -43,10 +44,33 @@ export const AuthProvider = ({ children }) => {
       setUserPosition(position);
       setUserContactNum(contact_number);
       setUserImage(image);
+      // localStorage.setItem("userExist", true);
+      // Store the user's login information in local storage
       localStorage.setItem("userExist", true);
+      localStorage.setItem("userName", `${first_name} ${last_name}`);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userMunicipality", municipality);
+      localStorage.setItem("userBarangay", barangay);
+      localStorage.setItem("userPosition", position);
+      localStorage.setItem("userContactNum", contact_number);
+      localStorage.setItem("userImage", image);
       history.push("/admin");
     }
   };
+  useEffect(() => {
+    const userExists = JSON.parse(localStorage.getItem("userExist"));
+    if (userExists) {
+      setUserExist(true);
+      setUserUserName(localStorage.getItem("userUserName"));
+      setUserName(localStorage.getItem("userName"));
+      setUserEmail(localStorage.getItem("userEmail"));
+      setUserMunicipality(localStorage.getItem("userMunicipality"));
+      setUserBarangay(localStorage.getItem("userBarangay"));
+      setUserPosition(localStorage.getItem("userPosition"));
+      setUserContactNum(localStorage.getItem("userContactNum"));
+      setUserImage(localStorage.getItem("userImage"));
+    }
+  }, []);
 
   const logoutUser = () => {
     // setAuthTokens(null);
@@ -59,25 +83,19 @@ export const AuthProvider = ({ children }) => {
     setUserPosition("");
     setUserContactNum("");
     setUserImage(null);
+    // Remove the user's login information from local storage
     localStorage.removeItem("userExist", false);
-    // localStorage.removeItem("userUserName");
-    // localStorage.removeItem("userName");
-    // localStorage.removeItem("userEmail");
-    // localStorage.removeItem("userMunicipality");
-    // localStorage.removeItem("userBarangay");
-    // localStorage.removeItem("userPosition");
-    // localStorage.removeItem("userContactNum");
-    // localStorage.removeItem("userImage");
+    localStorage.removeItem("userUserName");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userMunicipality");
+    localStorage.removeItem("userBarangay");
+    localStorage.removeItem("userPosition");
+    localStorage.removeItem("userContactNum");
+    localStorage.removeItem("userImage");
 
     history.push("/auth/signin");
   };
-
-  useEffect(() => {
-    const userExists = JSON.parse(localStorage.getItem("userExist"));
-    if (userExists) {
-      setUserExist(true);
-    }
-  }, []);
 
   let contextData = {
     userExist,
@@ -98,100 +116,3 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
   );
 };
-
-// export const AuthProvider = ({ children }) => {
-//   let [authTokens, setAuthTokens] = useState(() =>
-//     localStorage.getItem("authTokens")
-//       ? JSON.parse(localStorage.getItem("authTokens"))
-//       : null
-//   );
-//   let [user, setUser] = useState(() =>
-//     localStorage.getItem("authTokens")
-//       ? jwt_decode(localStorage.getItem("authTokens"))
-//       : null
-//   );
-//   let [loading, setLoading] = useState(true);
-
-//   const history = useHistory();
-
-//   let loginUser = async (e) => {
-//     e.preventDefault();
-//     let response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         username: e.target.username.value,
-//         password: e.target.password.value,
-//       }),
-//     });
-//     let data = await response.json();
-
-//     if (response.status === 200) {
-//       setAuthTokens(data);
-//       setUser(jwt_decode(data.access));
-//       localStorage.setItem("authTokens", JSON.stringify(data));
-//       history.push("/admin");
-//     } else {
-//       alert("Something went wrong!");
-//     }
-//   };
-
-//   let logoutUser = () => {
-//     setAuthTokens(null);
-//     setUser(null);
-//     localStorage.removeItem("authTokens");
-//     history.push("/auth/signin");
-//   };
-
-//   let updateToken = async () => {
-//     let response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ refresh: authTokens?.refresh }),
-//     });
-
-//     let data = await response.json();
-
-//     if (response.status === 200) {
-//       setAuthTokens(data);
-//       setUser(jwt_decode(data.access));
-//       localStorage.setItem("authTokens", JSON.stringify(data));
-//     } else {
-//       logoutUser();
-//     }
-
-//     if (loading) {
-//       setLoading(false);
-//     }
-//   };
-
-//   let contextData = {
-//     user: user,
-//     authTokens: authTokens,
-//     loginUser: loginUser,
-//     logoutUser: logoutUser,
-//   };
-
-//   useEffect(() => {
-//     if (loading) {
-//       updateToken();
-//     }
-
-//     let fourMinutes = 1000 * 60 * 4;
-
-//     let interval = setInterval(() => {
-//       if (authTokens) {
-//         updateToken();
-//       }
-//     }, fourMinutes);
-//     return () => clearInterval(interval);
-//   }, [authTokens, loading]);
-
-//   return (
-//     <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
-//   );
-// };

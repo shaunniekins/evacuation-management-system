@@ -122,7 +122,7 @@ const View = () => {
                 return (
                   <RepackedRow
                     key={index}
-                    entries={entries}
+                    // entries={entries}
                     id={row.id}
                     items={row.items}
                     units={row.units}
@@ -147,7 +147,7 @@ const View = () => {
         // key={index}
         // itemName={row.name}
         // itemUnit={row.unit}
-        inventoryEntries={addEntries}
+        // inventoryEntries={addEntries}
         isOpen={isOpen}
         onClose={onClose}
         initialRef={initialRef}

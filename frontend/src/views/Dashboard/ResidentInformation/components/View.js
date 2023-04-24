@@ -23,6 +23,9 @@ import { evacueeAdd } from "api/evacueeAPI";
 import { MunicipalityList } from "api/municipalityAPI";
 import { BarangayList } from "api/barangayAPI";
 
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+
 function View() {
   const [formData, setFormData] = useState({});
   const [isPwd, setIsPwd] = useState("");
@@ -37,6 +40,20 @@ function View() {
     "linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)",
     "gray.800"
   );
+
+  let {
+    userExist,
+    userUserName,
+    userName,
+    userEmail,
+    userMunicipality,
+    userBarangay,
+    userPosition,
+    userContactNum,
+    userImage,
+  } = useContext(AuthContext);
+
+  const currentBarangay = !userExist ? userMunicipality : "";
 
   const handleSubmit = async (event) => {
     event.preventDefault();

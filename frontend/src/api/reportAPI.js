@@ -8,7 +8,7 @@ export const EvacueeReport = () => {
   }, []);
 
   const getReport = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/evacuee/");
+    let response = await fetch("http://127.0.0.1:8000/api/resident/");
     let data = await response.json();
     setEntries(data);
   };

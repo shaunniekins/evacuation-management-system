@@ -16,8 +16,7 @@ import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 
 function StockinRow(props) {
-  const { addEntries, id, givenBy, donor, dateReceived, itemID, unit, qty } =
-    props;
+  const { id, givenBy, donor, dateReceived, itemID, unit, qty } = props;
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -41,22 +40,30 @@ function StockinRow(props) {
     }
   }, [selectedItem]);
 
+  React.useEffect(() => {
+    // document.body.style.overflow = "unset";
+    // Specify how to clean up after this effect:
+    return function cleanup() {};
+  });
+
   const inventoryList = InventoryList(id, itemID);
 
   const handleDelete = async () => {
     const itemIDValueSubmit = itemID;
     const preQty = qty;
     try {
-      inventoryList.map(async (entry) => {
-        if (parseInt(entry.item) === parseInt(itemID)) {
-          let computedQty = parseFloat(entry.qty) - parseFloat(preQty);
-          const resultInventory = await InventoryUpdate(
-            entry.id,
-            itemIDValueSubmit,
-            computedQty
-          );
-        }
-      });
+      await Promise.all(
+        inventoryList.map(async (entry) => {
+          if (parseInt(entry.item) === parseInt(itemID)) {
+            let computedQty = parseFloat(entry.qty) - parseFloat(preQty);
+            const resultInventory = await InventoryUpdate(
+              entry.id,
+              itemIDValueSubmit,
+              computedQty
+            );
+          }
+        })
+      );
       await StockinDelete(id);
       // onClose();
     } catch (error) {
@@ -138,7 +145,7 @@ function StockinRow(props) {
 
       <UpdateModal
         {...{
-          addEntries,
+          // addEntries,
           id,
           givenBy,
           donor,

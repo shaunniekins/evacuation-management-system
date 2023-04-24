@@ -12,12 +12,12 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RepackedDelete } from "api/repackedAPI";
 import { useDisclosure } from "@chakra-ui/react";
 
-import UpdateModal from "./UpdateModal";
+// import UpdateModal from "./UpdateModal";
 import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 
 function RepackedRow(props) {
-  const { entries, id, items, units, qty, instance, reason } = props;
+  const { id, items, units, qty, instance, reason } = props;
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -28,6 +28,12 @@ function RepackedRow(props) {
 
   const entry1 = ItemList();
   const inventoryList = InventoryList();
+
+  React.useEffect(() => {
+    // document.body.style.overflow = "unset";
+    // Specify how to clean up after this effect:
+    return function cleanup() {};
+  });
 
   const handleDelete = async () => {
     const itemsArr = items.split(","); // convert to array

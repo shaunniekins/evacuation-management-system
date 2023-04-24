@@ -58,17 +58,19 @@ const UpdateModal = ({
     }
 
     try {
-      inventoryList.map(async (entry) => {
-        // if (entry.item === parseInt(itemIDValueSubmit)) {
-        let computedQty =
-          parseFloat(entry.qty) - parseFloat(preQty) + parseFloat(newQty);
-        const resultInventory = await InventoryUpdate(
-          entry.id,
-          itemIDValueSubmit,
-          computedQty
-        );
-        // }
-      });
+      if (inventoryList) {
+        inventoryList.map(async (entry) => {
+          // if (entry.item === parseInt(itemIDValueSubmit)) {
+          let computedQty =
+            parseFloat(entry.qty) - parseFloat(preQty) + parseFloat(newQty);
+          const resultInventory = await InventoryUpdate(
+            entry.id,
+            itemIDValueSubmit,
+            computedQty
+          );
+          // }
+        });
+      }
 
       onClose();
     } catch (error) {
@@ -93,6 +95,12 @@ const UpdateModal = ({
     }
   }, [selectedItem]);
   const [itemIDValue, setItemIDValue] = useState(itemID);
+
+  React.useEffect(() => {
+    // document.body.style.overflow = "unset";
+    // Specify how to clean up after this effect:
+    return function cleanup() {};
+  });
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -169,14 +177,16 @@ const UpdateModal = ({
                   defaultValue={itemName}
                   placeholder="--Select option--"
                   onChange={handleSelectChange}>
-                  {addEntries.map((entry) => (
-                    <option
-                      key={entry.id}
-                      value={entry.name}
-                      data-id={entry.id}>
-                      {entry.name}
-                    </option>
-                  ))}
+                  {addEntries
+                    ? addEntries.map((entry) => (
+                        <option
+                          key={entry.id}
+                          value={entry.name}
+                          data-id={entry.id}>
+                          {entry.name}
+                        </option>
+                      ))
+                    : ""}
                 </Select>
                 <Input
                   required

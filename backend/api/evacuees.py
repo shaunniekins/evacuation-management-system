@@ -1,24 +1,24 @@
-from backend.models import Evacuees, Evacuation, Barangay, Municipality
+from backend.models import Resident, Evacuation, Barangay, Municipality
 
 
 def get_evacuee_count():
-    return Evacuees.objects.count()
+    return Resident.objects.count()
 
 
 def get_family_count():
-    return Evacuees.objects.filter(is_head='YES').count()
+    return Resident.objects.filter(is_head='YES').count()
 
 
 def get_male_count():
-    return Evacuees.objects.filter(gender='MALE').count()
+    return Resident.objects.filter(gender='MALE').count()
 
 
 def get_female_count():
-    return Evacuees.objects.filter(gender='FEMALE').count()
+    return Resident.objects.filter(gender='FEMALE').count()
 
 
 def get_family_count():
-    return Evacuees.objects.filter(is_head='YES').count()
+    return Resident.objects.filter(is_head='YES').count()
 
 
 def get_evacuation_center_count():

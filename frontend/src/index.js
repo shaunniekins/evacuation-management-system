@@ -31,17 +31,19 @@ import AuthLayout from "layouts/Auth.js";
 import AdminLayout from "layouts/Admin.js";
 
 ReactDOM.render(
-  // <HashRouter>
-  //   <Switch>
-  <Router>
-    <AuthProvider>
-      <Route path={`/auth`} component={AuthLayout} />
-      <PrivateRoute path={`/admin`} component={AdminLayout} />
-      <Redirect from={`/`} to="/admin/dashboard" />
-      <Redirect from={`/auth`} to="/auth/signin" />
-    </AuthProvider>
-  </Router>,
-  // </Switch>
-  // </HashRouter>
+  <HashRouter>
+    <Switch>
+      {/* <Router> */}
+      <AuthProvider>
+        {/* <Route path={`/admin`} component={AdminLayout} /> */}
+        <Route path={`/auth`} component={AuthLayout} />
+
+        <PrivateRoute path={`/admin`} component={AdminLayout} />
+        <Redirect from={`/`} to="/admin/dashboard" />
+        {/* <Redirect from={`/auth`} to="/auth/signin" /> */}
+      </AuthProvider>
+      {/* </Router> */}
+    </Switch>
+  </HashRouter>,
   document.getElementById("root")
 );
