@@ -17,6 +17,8 @@ import { StockinAdd } from "api/stockinAPI";
 import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
 import { ItemList } from "api/itemAPI";
 
+import { useHistory } from "react-router-dom";
+
 const AddModal = ({
   // addEntries,
   // itemName,
@@ -27,6 +29,8 @@ const AddModal = ({
   finalRef,
 }) => {
   const addEntries = ItemList();
+
+  const history = useHistory();
 
   const inventoryList = InventoryList();
 
@@ -45,7 +49,7 @@ const AddModal = ({
         dateReceived,
         itemIDValueSubmit,
         qty
-      ); // call the API function
+      );
     } catch (error) {
       alert("Failed");
     }
@@ -70,6 +74,7 @@ const AddModal = ({
       }
 
       onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -84,16 +89,13 @@ const AddModal = ({
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
 
-    // Find the entry with a matching name
     const matchingEntry = addEntries.find(
       (entry) => entry.name === selectedValue
     );
 
     if (matchingEntry) {
-      // Set the unit value to the matching entry's unit
       setUnitValue(matchingEntry.unit);
     } else {
-      // If no matching entry is found, reset the unit value
       setUnitValue("");
     }
 
@@ -118,22 +120,26 @@ const AddModal = ({
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel>From</FormLabel>
-              <Select
-                required
-                id="givenBy-field"
-                name="givenBy"
-                placeholder="--Select option--">
-                <option value="Government">Government</option>
-                <option value="Private">Private</option>
-              </Select>
-              <FormLabel>Name</FormLabel>
-              <Input
-                type="text"
-                id="donor-field"
-                name="donor"
-                ref={initialRef}
-                placeholder="Name (Optional)"
-              />
+              <Flex justify={"space-between"} gap={2}>
+                <Select
+                  required
+                  id="givenBy-field"
+                  name="givenBy"
+                  w={"40%"}
+                  placeholder="-- Select --">
+                  <option value="Government">Government</option>
+                  <option value="Private">Private</option>
+                </Select>
+                <Input
+                  type="text"
+                  id="donor-field"
+                  name="donor"
+                  ref={initialRef}
+                  placeholder="Name (Optional)"
+                  w={"60%"}
+                />
+              </Flex>
+
               <FormLabel>Date Received</FormLabel>
               <Input
                 required
@@ -163,6 +169,15 @@ const AddModal = ({
                 </Select>
                 <Input
                   required
+                  type="number"
+                  id="qty-field"
+                  name="qty"
+                  ref={initialRef}
+                  placeholder="Qty"
+                  w={"30%"}
+                />
+                <Input
+                  required
                   disabled
                   type="text"
                   id="unit-field"
@@ -173,19 +188,8 @@ const AddModal = ({
                   value={unitValue}
                 />
               </Flex>
-
-              <FormLabel>Quantity</FormLabel>
-              <Input
-                required
-                type="number"
-                id="qty-field"
-                name="qty"
-                ref={initialRef}
-                placeholder="Quantity"
-              />
             </FormControl>
           </ModalBody>
-
           <ModalFooter>
             <Button colorscheme="blue" mr={3} type="submit">
               Add

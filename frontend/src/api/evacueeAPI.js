@@ -111,7 +111,7 @@ export const evacueeUpdate = async (
       }),
     });
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -129,7 +129,7 @@ export const evacueeDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

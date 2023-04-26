@@ -21,16 +21,14 @@ import CardHeader from "components/Card/CardHeader.js";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { RepackedAdd } from "api/repackedAPI";
 import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
-import {
-  BarangayInventoryList,
-  BarangayInventoryAdd,
-  BarangayInventoryUpdate,
-} from "api/inventoryPerBarangayAPI";
 import { ItemList } from "api/itemAPI";
 import { BarangayList } from "api/barangayAPI";
-
-import { useContext } from "react";
-import AuthContext from "context/AuthContext";
+import { DistributeBarangayInventoryAdd } from "api/distributeBarangayAPI";
+import {
+  BarangayInventoryAdd,
+  BarangayInventoryList,
+} from "api/inventoryPerBarangayAPI";
+import { BarangayInventoryUpdate } from "api/inventoryPerBarangayAPI";
 
 import { useHistory } from "react-router-dom";
 
@@ -41,28 +39,18 @@ const AddModal = ({
   initialRef,
   finalRef,
 }) => {
-  const history = useHistory();
-
   const textColor = useColorModeValue("gray.700", "white");
 
-  let { userBarangay } = useContext(AuthContext);
-  // console.log("userBarangay: ", userBarangay);
-
+  const itemEntry = ItemList();
   const inventoryList = InventoryList();
+  const barangayEntry = BarangayList();
   const barangayInventoryList = BarangayInventoryList();
-  const barangayList = BarangayList();
 
   const [unitValue, setUnitValue] = useState("");
 
-  const entry1 = ItemList();
+  const history = useHistory();
 
-  let barangayID = null;
-  for (const barangay of barangayList) {
-    if (barangay.name === userBarangay) {
-      barangayID = barangay.id;
-      break;
-    }
-  }
+  const entry1 = ItemList();
 
   const idConvertName = (itemID, itemUnit, itemQty) => {
     const selectedItem = entry1.find((item) => item.id === itemID);
@@ -114,68 +102,129 @@ const AddModal = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const namesString = inputs.map((input) => input.item).join(", ");
-    const qtyString = inputs.map((input) => input.qty).join(", ");
-    const unitsString = unitsValues.join(", ");
 
-    const items = namesString;
-    const units = unitsString;
-    const qty = qtyString;
-    const instance = parseInt(event.target.deliverables.value);
-    const reason = event.target.reason.value;
-
-    try {
-      const result = await RepackedAdd(
-        items,
-        units,
-        qty,
-        instance,
-        reason,
-        userBarangay
-      );
-    } catch (error) {
-      alert("Failed");
-    }
-
-    const itemsArr = namesString.split(","); // convert to array
-    const unitsArr = units.split(",");
-    const qtyArr = qtyString.split(","); // convert to array
-
-    try {
-      for (let i = 0; i < itemsArr.length; i++) {
-        const item = parseInt(itemsArr[i].trim());
-
-        const matchingBarangayName = barangayList.find(
-          (barangayItem) => barangayItem.name === userBarangay
+    const updateAPI = async (item, unit, qty, barangay, date) => {
+      try {
+        const result = await DistributeBarangayInventoryAdd(
+          item,
+          unit,
+          qty,
+          barangay,
+          date
         );
 
-        const matchingInventoryItem = barangayInventoryList.find(
-          (inventoryItem) => inventoryItem.item === item
+        let itemExists = false;
+
+        barangayInventoryList.forEach((entry) => {
+          if (entry.item === item) {
+            itemExists = true;
+            const newQty = parseFloat(entry.qty) + parseFloat(qty);
+
+            BarangayInventoryUpdate(
+              entry.id,
+              item,
+              unit,
+              newQty,
+              barangay
+            ).catch((error) => {
+              alert(`Failed to update inventory item ${item}`);
+            });
+          }
+        });
+
+        if (!itemExists) {
+          BarangayInventoryAdd(item, unit, qty, barangay).catch((error) => {
+            alert(`Failed to add inventory item ${item}`);
+          });
+        }
+
+        return result;
+      } catch (error) {
+        alert(`Failed to distribute item ${item}`);
+      }
+    };
+
+    try {
+      let allValuesValid = true;
+
+      for (let i = 0; i < inputs.length; i++) {
+        const item = parseInt(inputs[i].item);
+        const unit = unitsValues[i];
+        const qty = parseFloat(inputs[i].qty);
+
+        const selectedItem = inventoryList.find(
+          (invItem) => invItem.item === item
         );
 
-        const id = matchingInventoryItem ? matchingInventoryItem.id : undefined;
-        const qtyEach = qtyArr[i].trim();
-        const qty = matchingInventoryItem
-          ? parseFloat(matchingInventoryItem.qty) -
-            parseFloat(qtyEach) * instance
-          : -parseFloat(qtyEach);
-        const unit = unitsArr[i].trim();
-        const barangay = matchingBarangayName ? matchingBarangayName.id : "";
-
-        let itemExists = matchingInventoryItem !== undefined;
-
-        if (itemExists) {
-          await BarangayInventoryUpdate(id, item, unit, qty, barangay);
-        } else {
-          await BarangayInventoryAdd(item, unit, qtyEach, barangay);
+        if (!selectedItem || parseFloat(selectedItem.qty) < qty) {
+          const matchingItemEntry = itemEntry.find(
+            (entry) => parseInt(entry.id) === parseInt(item)
+          );
+          alert(
+            `The input value of ${qty} ${unit} of ${
+              matchingItemEntry ? matchingItemEntry.name : ""
+            } exceeds the available inventory.`
+          );
+          allValuesValid = false;
+          break;
         }
       }
-      onClose();
-      history.push("/admin/dashboard");
+
+      if (allValuesValid) {
+        const barangay = event.target.barangay.value;
+        const date = event.target.date.value;
+
+        const results = [];
+
+        for (let i = 0; i < inputs.length; i++) {
+          const item = parseInt(inputs[i].item);
+          const unit = unitsValues[i];
+          const qty = parseInt(inputs[i].qty);
+
+          const result = await updateAPI(item, unit, qty, barangay, date);
+          results.push(result);
+        }
+
+        if (results.length !== inputs.length) {
+          console.log("Some items failed to distribute");
+        }
+
+        const namesString = inputs.map((input) => input.item).join(", ");
+        const qtyString = inputs.map((input) => input.qty).join(", ");
+        const unitsString = unitsValues.join(", ");
+
+        const itemsArr = namesString.split(",");
+        const qtyArr = qtyString.split(",");
+
+        const inventoryUpdateResults = [];
+
+        for (let i = 0; i < itemsArr.length; i++) {
+          const item = parseInt(itemsArr[i].trim());
+          const matchingInventoryItem = inventoryList.find(
+            (inventoryItem) => inventoryItem.item === item
+          );
+
+          if (matchingInventoryItem) {
+            const id = matchingInventoryItem.id;
+            const qtyEach = qtyArr[i].trim();
+            const qty =
+              parseFloat(matchingInventoryItem.qty) - parseFloat(qtyEach);
+
+            const resultInventory = await InventoryUpdate(id, item, qty);
+            inventoryUpdateResults.push(resultInventory);
+          }
+        }
+
+        onClose();
+        history.push("/admin/dashboard");
+      }
     } catch (error) {
-      alert("Failed");
+      alert(`Failed: ${error}`);
     }
   };
+
+  const [date, setDate] = useState(new Date());
+  const formattedDate = date.toISOString().slice(0, 10);
 
   return (
     <Modal
@@ -188,14 +237,14 @@ const AddModal = ({
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>
-          <ModalHeader>Repacked (Stock-Out)</ModalHeader>
+          <ModalHeader>Distribute (Barangay)</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Card border="1px" borderColor="gray.200" mb="1rem">
               <CardHeader>
                 <Flex justify="center" align="center" w="100%">
                   <Text fontSize="md" color={textColor} fontWeight="bold">
-                    Available Items in {userBarangay} Inventory
+                    Available Items in the Inventory
                   </Text>
                 </Flex>
               </CardHeader>
@@ -207,11 +256,9 @@ const AddModal = ({
                     columnGap: "2rem",
                     columnWidth: "50%",
                   }}>
-                  {barangayInventoryList
-                    ? barangayInventoryList
+                  {inventoryList
+                    ? inventoryList
                         .filter((item) => parseFloat(item.qty) !== 0)
-                        .filter((item) => barangayID === item.barangay)
-
                         .map((item) => (
                           <Text key={item.id}>
                             {idConvertName(item.item, item.qty, item.unit)}
@@ -223,15 +270,29 @@ const AddModal = ({
             </Card>
 
             <FormControl>
-              <FormLabel>Reason</FormLabel>
+              <FormLabel>Barangay</FormLabel>
+              <Select
+                required
+                id="barangay-field"
+                name="barangay"
+                placeholder="-- Select barangay --">
+                {barangayEntry.map((entry) => (
+                  <option key={entry.id} value={entry.id} data-id={entry.id}>
+                    {entry.name}
+                  </option>
+                ))}
+              </Select>
+              <FormLabel>Date</FormLabel>
               <Input
                 required
-                type="text"
-                id="reason-field"
-                name="reason"
+                type="date"
+                id="date-field"
+                name="date"
+                defaultValue={formattedDate}
                 ref={initialRef}
-                placeholder="Reason"
+                placeholder="Date"
               />
+
               {inputs.map((input) => (
                 <div key={input.id}>
                   <FormLabel htmlFor={`item-field-${input.id}`}>Item</FormLabel>
@@ -244,10 +305,9 @@ const AddModal = ({
                       placeholder="--Select option--"
                       onChange={(event) => handleInputChange(event, input.id)}
                       value={input.item}>
-                      {barangayInventoryList
-                        ? barangayInventoryList
+                      {inventoryList
+                        ? inventoryList
                             .filter((item) => parseFloat(item.qty) !== 0)
-                            .filter((item) => barangayID === item.barangay)
                             .map((item) => (
                               <option
                                 key={item.id}
@@ -289,16 +349,6 @@ const AddModal = ({
                 </Button>
               </Flex>
               {/* </Flex> */}
-              <FormLabel>Deliverables to create</FormLabel>
-              <Input
-                required
-                type="number"
-                id="deliverables-field"
-                name="deliverables"
-                defaultValue={1}
-                ref={initialRef}
-                placeholder="Number of Deliverables"
-              />
             </FormControl>
           </ModalBody>
 

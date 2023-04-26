@@ -12,12 +12,16 @@ import { useDisclosure } from "@chakra-ui/react";
 import UpdateModal from "./UpdateModal";
 import { MunicipalityDelete } from "api/municipalityAPI";
 
+import { useHistory } from "react-router-dom";
+
 function MunicipalityRow(props) {
   const { id, name, province } = props;
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const history = useHistory();
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
@@ -39,8 +43,7 @@ function MunicipalityRow(props) {
           <Flex
             direction={{ sm: "column", md: "row" }}
             align="flex-start"
-            p={{ md: "18px" }}
-          >
+            p={{ md: "18px" }}>
             <Button
               p="0px"
               bg="transparent"
@@ -48,9 +51,8 @@ function MunicipalityRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await MunicipalityDelete(id);
-                // window.location.reload(); // reload the page
-              }}
-            >
+                history.push("/admin/calamity");
+              }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />
                 <Text fontSize="sm" fontWeight="semibold">

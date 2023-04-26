@@ -11,12 +11,15 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { EvacuationCenterDelete } from "api/evacuationCenterAPI";
 import { useDisclosure } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
 
 // import UpdateModal from "views/Dashboard/TypeOfCalamity/components/UpdateModal";
 import UpdateModal from "./UpdateModal";
 
 function EvacuationRow(props) {
   const { id, name, municipality, barangay, capacity } = props;
+  const history = useHistory();
+
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -55,8 +58,7 @@ function EvacuationRow(props) {
           <Flex
             direction={{ sm: "column", md: "row" }}
             align="flex-start"
-            p={{ md: "24px" }}
-          >
+            p={{ md: "24px" }}>
             <Button
               p="0px"
               bg="transparent"
@@ -64,9 +66,8 @@ function EvacuationRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await EvacuationCenterDelete(id);
-                // window.location.reload(); // reload the page
-              }}
-            >
+                history.push("/admin/barangay-information");
+              }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />
                 <Text fontSize="sm" fontWeight="semibold">

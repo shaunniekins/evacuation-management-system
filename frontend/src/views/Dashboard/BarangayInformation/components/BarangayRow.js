@@ -11,6 +11,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { useDisclosure } from "@chakra-ui/react";
 import UpdateModal from "./UpdateModal";
 import { BarangayDelete } from "api/barangayAPI";
+import { useHistory } from "react-router-dom";
 
 function BarangayRow(props) {
   const { id, name, municipality } = props;
@@ -21,6 +22,8 @@ function BarangayRow(props) {
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+
+  const history = useHistory();
 
   return (
     <>
@@ -39,8 +42,7 @@ function BarangayRow(props) {
           <Flex
             direction={{ sm: "column", md: "row" }}
             align="flex-start"
-            p={{ md: "18px" }}
-          >
+            p={{ md: "18px" }}>
             <Button
               p="0px"
               bg="transparent"
@@ -49,8 +51,8 @@ function BarangayRow(props) {
               onClick={async () => {
                 await BarangayDelete(id);
                 // window.location.reload(); // reload the page
-              }}
-            >
+                history.push("/admin/municipality-information");
+              }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />
                 <Text fontSize="sm" fontWeight="semibold">

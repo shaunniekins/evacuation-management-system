@@ -10,6 +10,7 @@ import React from "react";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { ItemDelete } from "api/itemAPI";
 import { useDisclosure } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
 
 import UpdateModal from "./UpdateModal";
 
@@ -22,6 +23,7 @@ function ItemRow(props) {
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+  const history = useHistory();
 
   return (
     <>
@@ -52,7 +54,7 @@ function ItemRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await ItemDelete(id);
-                // window.location.reload(); // reload the page
+                history.push("/admin/dashboard");
               }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />

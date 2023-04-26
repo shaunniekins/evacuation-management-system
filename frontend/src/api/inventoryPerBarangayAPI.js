@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 
-export const resEvacList = () => {
+export const BarangayInventoryList = () => {
   const [entries, setEntries] = useState([]);
 
   useEffect(() => {
-    getResEvac();
+    getItem();
   }, []);
 
-  const getResEvac = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/resident_evacuation");
+  const getItem = async () => {
+    let response = await fetch("http://127.0.0.1:8000/api/barangayinventory");
     let data = await response.json();
     setEntries(data);
   };
@@ -16,10 +16,10 @@ export const resEvacList = () => {
   return entries;
 };
 
-export const resEvacAdd = async (resident, evacuation, isHead, date) => {
+export const BarangayInventoryAdd = async (item, unit, qty, barangay) => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/resident_evacuation/",
+      "http://127.0.0.1:8000/api/barangayinventory/",
       {
         method: "POST",
         headers: {
@@ -27,10 +27,11 @@ export const resEvacAdd = async (resident, evacuation, isHead, date) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          resident: resident,
-          evacuation: evacuation,
-          isHead: isHead,
-          date: date,
+          // id: null,
+          item: item,
+          unit: unit,
+          qty: qty,
+          barangay: barangay,
         }),
       }
     );
@@ -42,10 +43,16 @@ export const resEvacAdd = async (resident, evacuation, isHead, date) => {
   }
 };
 
-export const resEvacUpdate = async (id, resident, evacuation, isHead, date) => {
+export const BarangayInventoryUpdate = async (
+  id,
+  item,
+  unit,
+  qty,
+  barangay
+) => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/resident_evacuation/" + id,
+      "http://127.0.0.1:8000/api/barangayinventory/" + id,
       {
         method: "PUT",
         headers: {
@@ -53,10 +60,10 @@ export const resEvacUpdate = async (id, resident, evacuation, isHead, date) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          resident: resident,
-          evacuation: evacuation,
-          isHead: isHead,
-          date: date,
+          item: item,
+          unit: unit,
+          qty: qty,
+          barangay: barangay,
         }),
       }
     );
@@ -69,9 +76,9 @@ export const resEvacUpdate = async (id, resident, evacuation, isHead, date) => {
   }
 };
 
-export const resEvacDelete = (id) => {
+export const BarangayInventoryDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/resident_evacuation/" + id, {
+    fetch("http://127.0.0.1:8000/api/barangayinventory/" + id, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

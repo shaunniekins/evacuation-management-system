@@ -1,3 +1,4 @@
+// Chakra imports
 import {
   Button,
   Flex,
@@ -6,17 +7,20 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+// Custom components
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
+
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-// import { CalamityList } from "api/calamityAPI";
-import { resEvacList } from "api/residentInEvacuationAPI";
-import ItemRow from "./ItemRow";
-import { EvacueeList } from "api/evacueeAPI";
+import DistributeRow from "./DistributeRow";
+import { StockinList } from "api/stockinAPI";
+import { ItemList } from "api/itemAPI";
+import { evacDistributeList } from "api/distributedEvacuees";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -26,20 +30,18 @@ const View = () => {
     "linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)",
     "gray.800"
   );
-
+  // console.log("stockin: ", StockinList());
   const [query, setQuery] = useState("");
-  const residentEntry = EvacueeList();
 
-  const entries = resEvacList().filter(
+  // const entries = StockinList();
+
+  const entries = evacDistributeList().filter(
     (entry) =>
-      (entry.resident &&
-        entry.resident
-          .toString()
-          .toLowerCase()
-          .includes(query.toLowerCase())) ||
-      (entry.evacuation &&
-        entry.evacuation.toString().toLowerCase().includes(query.toLowerCase()))
+      entry.calamity.toLowerCase().includes(query.toLowerCase()) ||
+      entry.evacuee.toLowerCase().includes(query.toLowerCase())
   );
+
+  const addEntries = ItemList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -48,7 +50,7 @@ const View = () => {
 
   return (
     <>
-      <Card p="16px" mt="24px">
+      <Card p="16px" align={"start"}>
         <CardHeader>
           <Flex
             justify="space-between"
@@ -56,7 +58,7 @@ const View = () => {
             minHeight="60px"
             w="100%">
             <Text fontSize="lg" color={textColor} fontWeight="bold">
-              Residents in Evacuation Center
+              Distribute to Evacuees
             </Text>
             <Button
               bg={bgButton}
@@ -81,7 +83,7 @@ const View = () => {
                 py="0.75rem"
                 bg="transparent"
                 borderRadius="15px"
-                width="100%"
+                w="100%"
                 border="1px solid"
                 borderColor={borderColor}
                 align="center">
@@ -113,15 +115,16 @@ const View = () => {
             </Flex>
             <Flex direction="column" w="100%">
               {entries.map((row, index) => {
-                // console.log(row.date);
                 return (
-                  <ItemRow
+                  <DistributeRow
                     key={index}
                     id={row.id}
-                    resident={row.resident}
-                    evacuation={row.evacuation}
-                    isHead={row.isHead}
-                    date={row.date}
+                    repackedItem={row.repackedItem}
+                    calamity={row.calamity}
+                    calamityDate={row.calamityDate}
+                    dateDistributed={row.dateDistributed}
+                    evacuee={row.evacuee}
+                    headFamily={row.headFamily}
                   />
                 );
               })}
@@ -129,8 +132,13 @@ const View = () => {
           </Flex>
         </CardBody>
       </Card>
-
-      <AddModal {...{ isOpen, onClose, initialRef, finalRef }} />
+      <AddModal
+        isOpen={isOpen}
+        onClose={onClose}
+        initialRef={initialRef}
+        finalRef={finalRef}
+      />
+      {/* ))} */}
     </>
   );
 };

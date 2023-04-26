@@ -52,7 +52,7 @@ export const CalamityUpdate = async (id, name, date) => {
       }),
     });
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);

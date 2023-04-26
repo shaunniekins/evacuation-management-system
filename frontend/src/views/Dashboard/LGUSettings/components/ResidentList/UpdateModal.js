@@ -19,6 +19,7 @@ import {
 import { ViewIcon, ViewOffIcon, Icon } from "@chakra-ui/icons";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { evacueeUpdate } from "api/evacueeAPI";
+import { useHistory } from "react-router-dom";
 
 const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
   const {
@@ -39,6 +40,8 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     is_head,
     household_num,
   } = data;
+
+  const history = useHistory();
 
   const [age, setAge] = useState("");
 
@@ -84,8 +87,10 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
         event.target.household_num.value
       ); // call the API function
       onClose();
+      history.push("/admin/resident-information");
     } catch (error) {
       alert("Failed");
+      resident - information;
     }
   };
   const bgButton = useColorModeValue(

@@ -1,3 +1,4 @@
+// Chakra imports
 import {
   Button,
   Flex,
@@ -6,17 +7,23 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+// Custom components
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
+
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-// import { CalamityList } from "api/calamityAPI";
-import { resEvacList } from "api/residentInEvacuationAPI";
-import ItemRow from "./ItemRow";
-import { EvacueeList } from "api/evacueeAPI";
+import DistributeBarangayRow from "./DistributeBarangayRow";
+// import { StockinList } from "api/stockinAPI";
+import { RepackedList } from "api/repackedAPI";
+import { ItemList } from "api/itemAPI";
+import { InventoryList } from "api/inventoryAPI";
+import { BarangayInventoryList } from "api/inventoryPerBarangayAPI";
+import { DistributeBarangayInventoryList } from "api/distributeBarangayAPI";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -26,20 +33,28 @@ const View = () => {
     "linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)",
     "gray.800"
   );
-
+  // console.log("stockin: ", StockinList());
   const [query, setQuery] = useState("");
-  const residentEntry = EvacueeList();
 
-  const entries = resEvacList().filter(
+  // const entries = StockinList();
+
+  // const entries = BarangayInventoryList().filter(
+  //   (entry) =>
+  //     entry.item.toLowerCase().includes(query.toLowerCase()) ||
+  //     // entry.barangay.toLowerCase().includes(query.toLowerCase())
+  //     entry.unit.toLowerCase().includes(query.toLowerCase())
+  // );
+
+  const entries = DistributeBarangayInventoryList().filter(
     (entry) =>
-      (entry.resident &&
-        entry.resident
-          .toString()
-          .toLowerCase()
-          .includes(query.toLowerCase())) ||
-      (entry.evacuation &&
-        entry.evacuation.toString().toLowerCase().includes(query.toLowerCase()))
+      (entry.item &&
+        entry.item.toString().toLowerCase().includes(query.toLowerCase())) ||
+      (entry.unit &&
+        entry.unit.toString().toLowerCase().includes(query.toLowerCase()))
   );
+
+  const addEntries = ItemList();
+  const inventoryEntries = InventoryList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -48,7 +63,7 @@ const View = () => {
 
   return (
     <>
-      <Card p="16px" mt="24px">
+      <Card p="16px" align={"start"}>
         <CardHeader>
           <Flex
             justify="space-between"
@@ -56,7 +71,7 @@ const View = () => {
             minHeight="60px"
             w="100%">
             <Text fontSize="lg" color={textColor} fontWeight="bold">
-              Residents in Evacuation Center
+              Barangay Distribution
             </Text>
             <Button
               bg={bgButton}
@@ -81,7 +96,7 @@ const View = () => {
                 py="0.75rem"
                 bg="transparent"
                 borderRadius="15px"
-                width="100%"
+                w="100%"
                 border="1px solid"
                 borderColor={borderColor}
                 align="center">
@@ -113,15 +128,23 @@ const View = () => {
             </Flex>
             <Flex direction="column" w="100%">
               {entries.map((row, index) => {
-                // console.log(row.date);
+                // console.log(row.unit);
                 return (
-                  <ItemRow
+                  <DistributeBarangayRow
                     key={index}
+                    // entries={entries}
                     id={row.id}
-                    resident={row.resident}
-                    evacuation={row.evacuation}
-                    isHead={row.isHead}
+                    item={row.item}
+                    unit={row.unit}
+                    qty={row.qty}
+                    barangay={row.barangay}
                     date={row.date}
+
+                    // givenBy={row.givenBy}
+                    // donor={row.donor}
+                    // dateReceived={row.dateReceived}
+                    // itemID={row.item}
+                    // unit={row.unit}
                   />
                 );
               })}
@@ -129,8 +152,18 @@ const View = () => {
           </Flex>
         </CardBody>
       </Card>
-
-      <AddModal {...{ isOpen, onClose, initialRef, finalRef }} />
+      {/* {addEntries.map((row, index) => ( */}
+      <AddModal
+        // key={index}
+        // itemName={row.name}
+        // itemUnit={row.unit}
+        // inventoryEntries={addEntries}
+        isOpen={isOpen}
+        onClose={onClose}
+        initialRef={initialRef}
+        finalRef={finalRef}
+      />
+      {/* ))} */}
     </>
   );
 };

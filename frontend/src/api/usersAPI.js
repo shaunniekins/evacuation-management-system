@@ -98,7 +98,7 @@ export const UserUpdate = async (
     });
 
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -116,7 +116,7 @@ export const UserDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

@@ -55,7 +55,7 @@ export const MunicipalityUpdate = async (id, name, province) => {
       }
     );
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -73,7 +73,7 @@ export const MunicipalityDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

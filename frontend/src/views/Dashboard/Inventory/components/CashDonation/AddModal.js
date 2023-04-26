@@ -14,7 +14,11 @@ import {
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { cashDonationAdd } from "api/cashDonationAPI";
 
+import { useHistory } from "react-router-dom";
+
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -27,6 +31,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
         event.target.date.value
       ); // call the API function
       onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }

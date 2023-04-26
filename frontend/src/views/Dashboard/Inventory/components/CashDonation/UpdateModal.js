@@ -13,6 +13,8 @@ import {
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { cashDonationUpdate } from "api/cashDonationAPI";
 
+import { useHistory } from "react-router-dom";
+
 const UpdateModal = ({
   id,
   controlNumber,
@@ -26,7 +28,8 @@ const UpdateModal = ({
   initialRef,
   finalRef,
 }) => {
-  // console.log("dateReceived:", dateReceived);
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -40,6 +43,7 @@ const UpdateModal = ({
         event.target.date.value
       ); // call the API function
       onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }

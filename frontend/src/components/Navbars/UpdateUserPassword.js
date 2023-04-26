@@ -15,7 +15,6 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon, Icon } from "@chakra-ui/icons";
-import { useHistory } from "react-router-dom";
 
 import {
   FormControl,
@@ -27,73 +26,17 @@ import { UserUpdate } from "api/usersAPI";
 import { getBarangayList, getMunicipalityList } from "api/getListAPI";
 import { MunicipalityList } from "api/municipalityAPI";
 import { BarangayList } from "api/barangayAPI";
-import { UsersList } from "api/usersAPI";
 
-const UpdateModal = ({
-  id,
-  password,
-  is_superuser,
-  username,
-  first_name,
-  last_name,
-  email,
-  is_staff,
-  municipality,
-  barangay,
-  position,
-  contact_number,
-  image,
-  isOpen,
-  onClose,
-  initialRef,
-  finalRef,
-}) => {
+const UpdateModal = ({}) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const history = useHistory();
-
-  const usersList = UsersList();
-  const usernames = usersList.map((list) => {
-    return list.username;
-  });
-  const barangayEntries = BarangayList();
-  const municipalityEntries = MunicipalityList();
-  const [barangays, setBarangays] = useState([{ name: barangay }]);
-
-  const handleMunicipalityChange = (event) => {
-    const selectedMunicipality = event.target.value;
-    const filteredBarangays = barangayEntries.filter(
-      (barangay) => barangay.municipality === selectedMunicipality
-    );
-    setBarangays(filteredBarangays);
-  };
-
-  const profilePic = image === null ? false : image;
-
   const handleSubmit = async (event) => {
-    let imageSubmit =
-      event.target.image.files[0] === undefined
-        ? ""
-        : event.target.image.files[0];
-    // console.log("update image: ", imageSubmit);
-
     event.preventDefault();
     if (event.target.current_password.value !== password) {
       alert("Wrong current password.");
       return;
-    }
-
-    if (username !== event.target.username.value) {
-      if (
-        usernames
-          .map((username) => username.toLowerCase())
-          .includes(event.target.username.value.toLowerCase())
-      ) {
-        alert("Username already exists");
-        return;
-      }
     }
 
     if (
@@ -122,7 +65,6 @@ const UpdateModal = ({
           imageSubmit
         ); // call the API function
         onClose();
-        history.push("/admin/lgu-settings");
       } catch (error) {
         alert("Failed");
       }
@@ -149,77 +91,6 @@ const UpdateModal = ({
                 gap={10}
                 justify={"space-between"}>
                 <Flex direction={"column"} flex={1}>
-                  <FormLabel>First Name</FormLabel>
-                  <Input
-                    required
-                    type="text"
-                    id="first_name-field"
-                    name="first_name"
-                    defaultValue={first_name}
-                    ref={initialRef}
-                    placeholder="First Name"
-                  />
-                  <FormLabel>Last Name</FormLabel>
-                  <Input
-                    required
-                    type="text"
-                    id="last_name-field"
-                    name="last_name"
-                    defaultValue={last_name}
-                    ref={initialRef}
-                    placeholder="Last Name"
-                  />
-
-                  <FormLabel>Municipality</FormLabel>
-                  <Select
-                    required
-                    id="municipality-field"
-                    name="municipality"
-                    defaultValue={municipality}
-                    placeholder="-- Select municipality --">
-                    {municipalityEntries.map((municipality, index) => (
-                      <option key={index} value={municipality.name}>
-                        {municipality.name}
-                      </option>
-                    ))}
-                  </Select>
-
-                  <FormLabel>Barangay</FormLabel>
-                  <Select
-                    required
-                    id="barangay-field"
-                    name="barangay"
-                    defaultValue={barangay}
-                    placeholder="-- Select barangay --">
-                    {barangayEntries.map((barangay, index) => (
-                      <option key={index} value={barangay.name}>
-                        {barangay.name}
-                      </option>
-                    ))}
-                  </Select>
-                  <FormLabel>Position</FormLabel>
-                  <Select
-                    required
-                    id="position-field"
-                    name="position"
-                    defaultValue={position}
-                    placeholder="-- Select option --">
-                    <option value="Administrator">Administrator</option>
-                    <option value="Personnel">Personnel</option>
-                  </Select>
-
-                  <FormLabel>Contact Number</FormLabel>
-                  <Input
-                    required
-                    type="text"
-                    id="contact_number-field"
-                    name="contact_number"
-                    defaultValue={contact_number}
-                    ref={initialRef}
-                    placeholder="Contact Number"
-                  />
-                </Flex>
-                <Flex direction={"column"} flex={1}>
                   <FormLabel>Username</FormLabel>
                   <Input
                     required
@@ -230,32 +101,6 @@ const UpdateModal = ({
                     ref={initialRef}
                     placeholder="Username"
                   />
-                  <FormLabel>Email</FormLabel>
-                  <Input
-                    required
-                    type="email"
-                    id="email-field"
-                    name="email"
-                    defaultValue={email}
-                    ref={initialRef}
-                    placeholder="Email"
-                  />
-                  <FormLabel>{`${
-                    profilePic ? "Change" : "Upload"
-                  } Image`}</FormLabel>
-                  <Input
-                    type="file"
-                    id="image-field"
-                    name="image"
-                    ref={initialRef}
-                    // display={"none"}
-                    style={{
-                      color: "rgba(0, 0, 0, 0)",
-                    }}
-                    placeholder="Email"
-                  />
-                  {/* <FormHelperText>Select an image to upload.</FormHelperText> */}
-
                   <FormLabel>Current Password</FormLabel>
                   <InputGroup size="md">
                     <InputRightElement

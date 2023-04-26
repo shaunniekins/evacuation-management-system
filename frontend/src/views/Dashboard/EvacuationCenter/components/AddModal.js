@@ -15,8 +15,11 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { EvacuationCenterAdd } from "api/evacuationCenterAPI";
 import { MunicipalityList } from "api/municipalityAPI";
 import { BarangayList } from "api/barangayAPI";
+import { useHistory } from "react-router-dom";
 
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
+  const history = useHistory();
+
   const [formData, setFormData] = useState({});
   const barangayEntries = BarangayList();
   const municipalityEntries = MunicipalityList();
@@ -33,6 +36,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
       ); // call the API function
       setFormData({});
       onClose();
+      history.push("/admin/barangay-information");
     } catch (error) {
       alert("Failed");
     }

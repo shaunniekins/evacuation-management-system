@@ -14,6 +14,8 @@ import {
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { ItemUpdate } from "api/itemAPI";
 
+import { useHistory } from "react-router-dom";
+
 const UpdateModal = ({
   id,
   name,
@@ -23,7 +25,8 @@ const UpdateModal = ({
   initialRef,
   finalRef,
 }) => {
-  // console.log("dateReceived:", dateReceived);
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -31,8 +34,9 @@ const UpdateModal = ({
         id,
         event.target.name.value,
         event.target.unit.value
-      ); // call the API function
+      );
       onClose();
+      history.push("/admin/resident-information");
     } catch (error) {
       alert("Failed");
     }

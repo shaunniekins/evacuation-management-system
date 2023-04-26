@@ -14,6 +14,8 @@ import { useDisclosure } from "@chakra-ui/react";
 // import UpdateModal from "views/Dashboard/TypeOfCalamity/components/UpdateModal";
 import UpdateModal from "./UpdateModal";
 
+import { useHistory } from "react-router-dom";
+
 function CalamityRow(props) {
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
@@ -23,6 +25,7 @@ function CalamityRow(props) {
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+  const history = useHistory();
 
   return (
     <>
@@ -49,7 +52,7 @@ function CalamityRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await CalamityDelete(id);
-                // window.location.reload(); // reload the page
+                history.push("/admin/inventory");
               }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />

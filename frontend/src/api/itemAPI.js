@@ -52,7 +52,7 @@ export const ItemUpdate = async (id, name, unit) => {
       }),
     });
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -70,7 +70,7 @@ export const ItemDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

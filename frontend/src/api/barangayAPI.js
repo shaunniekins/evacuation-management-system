@@ -52,7 +52,7 @@ export const BarangayUpdate = async (id, name, municipality) => {
       }),
     });
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);

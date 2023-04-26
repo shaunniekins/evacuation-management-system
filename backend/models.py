@@ -53,7 +53,9 @@ class Evacuation(models.Model):
 
 class ResidentInEvacuation(models.Model):
     resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
-    evacuation = models.ForeignKey(Evacuation, on_delete=models.CASCADE)
+    evacuation = models.ForeignKey(
+        Evacuation, on_delete=models.CASCADE, blank=True)
+    isHead = models.CharField(max_length=3)
     date = models.DateField()
 
 
@@ -74,6 +76,21 @@ class Item(models.Model):
 class Inventory(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     qty = models.DecimalField(max_digits=12, decimal_places=1)
+
+
+class InventoryPerBarangay(models.Model):
+    item = models.IntegerField()
+    unit = models.CharField(max_length=5)
+    qty = models.DecimalField(max_digits=12, decimal_places=1)
+    barangay = models.IntegerField()
+
+
+class DistributionBarangay(models.Model):
+    item = models.IntegerField()
+    unit = models.CharField(max_length=5)
+    qty = models.DecimalField(max_digits=12, decimal_places=1)
+    barangay = models.IntegerField()
+    date = models.DateField()
 
 
 class StockedIn(models.Model):
@@ -97,14 +114,17 @@ class Repacked(models.Model):
     qty = models.TextField()
     instance = models.IntegerField()
     reason = models.TextField()
+    barangay = models.CharField(max_length=30)
 
 
 class Distributed(models.Model):
     id = models.AutoField(primary_key=True)
+    repackedItem = models.IntegerField()
     calamity = models.CharField(max_length=30)
     calamityDate = models.DateField()
     dateDistributed = models.DateField()
-    headFamily = models.CharField(max_length=50)
+    evacuee = models.CharField(max_length=50)
+    headFamily = models.CharField(max_length=3)
 
 
 class CashDonation(models.Model):

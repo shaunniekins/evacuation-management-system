@@ -16,6 +16,8 @@ import { useDisclosure } from "@chakra-ui/react";
 import UpdateModal from "./UpdateModal";
 import { ProfileIcon } from "components/Icons/Icons";
 
+import { useHistory } from "react-router-dom";
+
 function EvacuationRow(props) {
   const {
     id,
@@ -32,6 +34,9 @@ function EvacuationRow(props) {
     contact_number,
     image,
   } = props;
+
+  const history = useHistory();
+
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -134,7 +139,7 @@ function EvacuationRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await UserDelete(id);
-                // window.location.reload(); // reload the page
+                history.push("/admin/lgu-settings");
               }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />

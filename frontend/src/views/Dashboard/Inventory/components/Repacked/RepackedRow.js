@@ -15,9 +15,20 @@ import { useDisclosure } from "@chakra-ui/react";
 // import UpdateModal from "./UpdateModal";
 import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
+import {
+  BarangayInventoryList,
+  BarangayInventoryUpdate,
+} from "api/inventoryPerBarangayAPI";
+import { BarangayList } from "api/barangayAPI";
+
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+
+import { useHistory } from "react-router-dom";
 
 function RepackedRow(props) {
-  const { id, items, units, qty, instance, reason } = props;
+  const { id, items, units, qty, instance, reason, barangay, countItem } =
+    props;
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -25,9 +36,12 @@ function RepackedRow(props) {
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+  const history = useHistory();
 
   const entry1 = ItemList();
   const inventoryList = InventoryList();
+  const barangayInventoryList = BarangayInventoryList();
+  const barangayList = BarangayList();
 
   React.useEffect(() => {
     // document.body.style.overflow = "unset";
@@ -38,44 +52,60 @@ function RepackedRow(props) {
   const handleDelete = async () => {
     const itemsArr = items.split(","); // convert to array
     const qtyArr = qty.split(","); // convert to array
+    const unitsArr = units.split(",");
+
     // console.log("itemsArr: ", itemsArr);
     // console.log("qtyArr: ", qtyArr);
 
-    const results = [];
+    // const results = [];
 
     for (let i = 0; i < itemsArr.length; i++) {
       const item = parseInt(itemsArr[i].trim());
-      const matchingInventoryItem = inventoryList.find(
+
+      const matchingBarangayName = barangayList.find(
+        (barangayItem) => barangayItem.name === barangay
+      );
+
+      const matchingInventoryItem = barangayInventoryList.find(
         (inventoryItem) => inventoryItem.item === item
       );
 
-      if (matchingInventoryItem) {
-        const id = matchingInventoryItem.id;
-        const qtyEach = qtyArr[i].trim();
-        const qty = parseFloat(matchingInventoryItem.qty) + parseFloat(qtyEach);
+      const id = matchingInventoryItem.id;
+      const qtyEach = qtyArr[i].trim();
+      const qty = parseFloat(matchingInventoryItem.qty) + parseFloat(qtyEach);
 
-        const resultInventory = await InventoryUpdate(id, item, qty);
-        results.push(resultInventory);
-        // console.log("qty: ", qty);
+      const unit = unitsArr[i].trim();
+      const barangaySub = matchingBarangayName ? matchingBarangayName.id : "";
+      // console.log("barangaySub: ", barangaySub);
+
+      let itemExists = matchingInventoryItem !== undefined;
+
+      if (itemExists) {
+        await BarangayInventoryUpdate(id, item, unit, qty, barangaySub);
       }
     }
 
     try {
       await RepackedDelete(id);
       onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
   };
+  // console.log("barangay: ", barangay);
+
+  // let { userBarangay } = useContext(AuthContext);
+  // console.log("userBarangay: ", userBarangay);
 
   return (
     <>
       <Box px="24px" bg={bgColor} my="15px" borderRadius="12px">
         <Flex justify="space-between" w="100%">
           <Flex direction="column" justify={"center"} maxWidth="70%">
-            {/* <Text color={nameColor} fontSize="md" fontWeight="bold" mb="10px">
-              
-            </Text> */}
+            <Text color={nameColor} fontSize="md" fontWeight="bold" mb="10px">
+              {`Repacked #${countItem}`}
+            </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               Items:{" "}
               <Text as="span" color="gray.500">

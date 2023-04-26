@@ -15,6 +15,8 @@ import { BarangayUpdate } from "api/barangayAPI";
 // import { getMunicipalityList } from "api/getListAPI";
 import { MunicipalityList } from "api/municipalityAPI";
 
+import { useHistory } from "react-router-dom";
+
 const UpdateModal = ({
   id,
   name,
@@ -24,6 +26,8 @@ const UpdateModal = ({
   initialRef,
   finalRef,
 }) => {
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -33,6 +37,7 @@ const UpdateModal = ({
         event.target.municipality.value
       ); // call the API function
       onClose();
+      history.push("/admin/municipality-information");
     } catch (error) {
       alert("Failed");
     }

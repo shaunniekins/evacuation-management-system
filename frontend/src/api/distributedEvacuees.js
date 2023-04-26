@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 
-export const cashDonationList = () => {
+export const evacDistributeList = () => {
   const [entries, setEntries] = useState([]);
 
   useEffect(() => {
-    getCashDonation();
+    getItem();
   }, []);
 
-  const getCashDonation = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/cashdonation");
+  const getItem = async () => {
+    let response = await fetch("http://127.0.0.1:8000/api/distributed");
     let data = await response.json();
     setEntries(data);
   };
@@ -16,29 +16,28 @@ export const cashDonationList = () => {
   return entries;
 };
 
-export const cashDonationAdd = async (
-  controlNumber,
-  givenBy,
-  donor,
-  amount,
-  modeOfTransfer,
-  date
+export const evacDistributeAdd = async (
+  repackedItem,
+  calamity,
+  calamityDate,
+  dateDistributed,
+  evacuee,
+  headFamily
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/cashdonation/", {
+    const response = await fetch("http://127.0.0.1:8000/api/distributed/", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: null,
-        controlNumber: controlNumber,
-        givenBy: givenBy,
-        donor: donor,
-        amount: amount,
-        modeOfTransfer: modeOfTransfer,
-        date: date,
+        repackedItem: repackedItem,
+        calamity: calamity,
+        calamityDate: calamityDate,
+        dateDistributed: dateDistributed,
+        evacuee: evacuee,
+        headFamily: headFamily,
       }),
     });
     const data = await response.json();
@@ -49,18 +48,18 @@ export const cashDonationAdd = async (
   }
 };
 
-export const cashDonationUpdate = async (
+export const evacDistributeUpdate = async (
   id,
-  controlNumber,
-  givenBy,
-  donor,
-  amount,
-  modeOfTransfer,
-  date
+  repackedItem,
+  calamity,
+  calamityDate,
+  dateDistributed,
+  evacuee,
+  headFamily
 ) => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/cashdonation/" + id,
+      "http://127.0.0.1:8000/api/distributed/" + id,
       {
         method: "PUT",
         headers: {
@@ -68,12 +67,12 @@ export const cashDonationUpdate = async (
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          controlNumber: controlNumber,
-          givenBy: givenBy,
-          donor: donor,
-          amount: amount,
-          modeOfTransfer: modeOfTransfer,
-          date: date,
+          repackedItem: repackedItem,
+          calamity: calamity,
+          calamityDate: calamityDate,
+          dateDistributed: dateDistributed,
+          evacuee: evacuee,
+          headFamily: headFamily,
         }),
       }
     );
@@ -86,9 +85,9 @@ export const cashDonationUpdate = async (
   }
 };
 
-export const cashDonationDelete = (id) => {
+export const evacDistributeDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/cashdonation/" + id, {
+    fetch("http://127.0.0.1:8000/api/items/" + id, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
@@ -96,7 +95,7 @@ export const cashDonationDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

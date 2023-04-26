@@ -73,7 +73,7 @@ export const StockinUpdate = async (
       }),
     });
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -91,7 +91,7 @@ export const StockinDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

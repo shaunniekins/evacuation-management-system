@@ -13,9 +13,14 @@ import { useDisclosure } from "@chakra-ui/react";
 
 import UpdateModal from "./UpdateModal";
 
+import { useHistory } from "react-router-dom";
+
 function CashdonationRow(props) {
   const { id, controlNumber, givenBy, donor, amount, modeOfTransfer, date } =
     props;
+
+  const history = useHistory();
+
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -85,7 +90,7 @@ function CashdonationRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await cashDonationDelete(id);
-                // window.location.reload(); // reload the page
+                history.push("/admin/dashboard");
               }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />

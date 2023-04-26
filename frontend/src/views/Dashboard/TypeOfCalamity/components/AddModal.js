@@ -13,7 +13,11 @@ import {
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { CalamityAdd } from "api/calamityAPI";
 
+import { useHistory } from "react-router-dom";
+
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -22,6 +26,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
         event.target.date.value
       ); // call the API function
       onClose();
+      history.push("/admin/inventory");
     } catch (error) {
       alert("Failed");
     }
@@ -39,8 +44,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
       isOpen={isOpen}
       onClose={onClose}
       closeOnOverlayClick={false}
-      isCentered
-    >
+      isCentered>
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>

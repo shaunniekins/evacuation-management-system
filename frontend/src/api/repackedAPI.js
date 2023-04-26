@@ -16,13 +16,14 @@ export const RepackedList = () => {
   return entries;
 };
 
-export const RepackedAdd = async (items, units, qty, instance, reason) => {
-  console.log("items:", items);
-  console.log("units:", units);
-  console.log("qty:", qty);
-  console.log("instance:", instance);
-
-  console.log("reason:", reason);
+export const RepackedAdd = async (
+  items,
+  units,
+  qty,
+  instance,
+  reason,
+  barangay
+) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/repacked/", {
       method: "POST",
@@ -36,6 +37,7 @@ export const RepackedAdd = async (items, units, qty, instance, reason) => {
         qty: qty,
         instance: instance,
         reason: reason,
+        barangay: barangay,
       }),
     });
     const data = await response.json();
@@ -52,7 +54,8 @@ export const RepackedUpdate = async (
   units,
   qty,
   instance,
-  reason
+  reason,
+  barangay
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/repacked/" + id, {
@@ -67,10 +70,11 @@ export const RepackedUpdate = async (
         qty: qty,
         instance: instance,
         reason: reason,
+        barangay: barangay,
       }),
     });
     const data = await response.json();
-    alert("Updated!");
+    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -88,7 +92,7 @@ export const RepackedDelete = (id) => {
       },
     })
       .then(() => {
-        alert("Deleted!");
+        console.log("Deleted!");
       })
       .catch((error) => {
         console.log(error);

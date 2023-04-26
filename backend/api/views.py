@@ -21,9 +21,9 @@ from django.core.files.storage import default_storage
 from rest_framework.generics import CreateAPIView
 # from rest_framework.response import Response
 
-from backend.models import Resident, Municipality, Barangay, Evacuation, ResidentInEvacuation, Calamity, Item, Inventory, StockedIn, Repacked, Distributed, CashDonation
+from backend.models import Resident, Municipality, Barangay, Evacuation, ResidentInEvacuation, Calamity, Item, Inventory, InventoryPerBarangay, DistributionBarangay, StockedIn, Repacked, Distributed, CashDonation
 
-from backend.api.serializers import ResidentSerializer, MunicipalitySerializer, BarangaySerializer, EvacuationSerializer, ResidentInEvacuationSerializer, CalamitySerializer, ItemSerializer, InventorySerializer, StockedInSerializer, RepackedSerializer, DistributeReliefGoodsSerializer, CashDonationSerializer
+from backend.api.serializers import ResidentSerializer, MunicipalitySerializer, BarangaySerializer, EvacuationSerializer, ResidentInEvacuationSerializer, CalamitySerializer, ItemSerializer, InventorySerializer, InventoryPerBarangaySerializer, DistributionBarangaySerializer, StockedInSerializer, RepackedSerializer, DistributeReliefGoodsSerializer, CashDonationSerializer
 
 from .evacuees import get_evacuee_count, get_family_count, get_male_count, get_female_count, get_family_count, get_evacuation_center_count, get_barangay_count, get_barangay_items, get_municipality_items
 
@@ -409,6 +409,82 @@ def InventoryList(request, pk=0):
 
         inventory.delete()
         return Response("Stocked in Item Deleted Successfully")
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def InventoryPerBarangayAPI(request, pk=0):
+    if request.method == 'GET':
+        item = InventoryPerBarangay.objects.all()
+        item_serializer = InventoryPerBarangaySerializer(
+            item, many=True)
+        return Response(item_serializer.data)
+
+    elif request.method == 'POST':
+        item_serializer = InventoryPerBarangaySerializer(data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response("Data Added Successfully", status=status.HTTP_201_CREATED)
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PUT':
+        try:
+            item = InventoryPerBarangay.objects.get(id=pk)
+        except InventoryPerBarangay.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        item_serializer = InventoryPerBarangaySerializer(
+            item, data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response("Updated Successfully")
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            item = InventoryPerBarangay.objects.get(id=pk)
+        except InventoryPerBarangay.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        item.delete()
+        return Response("Item Deleted Successfully")
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def DistributeBarangayAPI(request, pk=0):
+    if request.method == 'GET':
+        item = DistributionBarangay.objects.all()
+        item_serializer = DistributionBarangaySerializer(
+            item, many=True)
+        return Response(item_serializer.data)
+
+    elif request.method == 'POST':
+        item_serializer = DistributionBarangaySerializer(data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response("Data Added Successfully", status=status.HTTP_201_CREATED)
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PUT':
+        try:
+            item = DistributionBarangay.objects.get(id=pk)
+        except DistributionBarangay.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        item_serializer = DistributionBarangaySerializer(
+            item, data=request.data)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response("Updated Successfully")
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            item = DistributionBarangay.objects.get(id=pk)
+        except DistributionBarangay.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        item.delete()
+        return Response("Item Deleted Successfully")
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])

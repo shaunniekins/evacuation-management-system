@@ -3,9 +3,11 @@ import {
   Text,
   Progress,
   Button,
+  DatePicker,
   Icon,
   useColorModeValue,
   Spacer,
+  Select,
   Table,
   Thead,
   Tbody,
@@ -21,10 +23,18 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { useDisclosure } from "@chakra-ui/react";
 import React, { useState } from "react";
 
-import { EvacueeList, evacueeDelete } from "api/evacueeAPI";
-import UpdateModal from "./UpdateModal";
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
 
-const TableList = () => {
+import { EvacueeList, evacueeDelete } from "api/evacueeAPI";
+import { useHistory } from "react-router-dom";
+
+import { resEvacList, resEvacDelete } from "api/residentInEvacuationAPI";
+// import UpdateModal from "./UpdateModal";
+import { EvacuationCenterList } from "api/evacuationCenterAPI";
+// import { EvacueeList } from "api/evacueeAPI";
+
+const TableList = ({ startDate, endDate }) => {
   // const textColor = useColorModeValue("gray.700", "white");
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
@@ -33,6 +43,33 @@ const TableList = () => {
     "linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)",
     "gray.800"
   );
+  const evacueeList = EvacueeList();
+  const evacuationList = EvacuationCenterList();
+  const evacList = resEvacList();
+
+  const history = useHistory();
+
+  let { userPosition, userBarangay } = useContext(AuthContext);
+  const isAdmin = userPosition == "Personnel" ? false : true;
+
+  const filteredEvacueesList = resEvacList().filter((entry) => {
+    if (!isAdmin) {
+      if (entry.barangay === userBarangay) {
+        if (startDate && endDate) {
+          const date = new Date(entry.date);
+          return date >= new Date(startDate) && date <= new Date(endDate);
+        }
+        return true;
+      }
+      return false; // <-- return false if the barangay doesn't match
+    } else {
+      if (startDate && endDate) {
+        const date = new Date(entry.date);
+        return date >= new Date(startDate) && date <= new Date(endDate);
+      }
+      return true;
+    }
+  });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -46,16 +83,23 @@ const TableList = () => {
     onOpen();
   };
   const [query, setQuery] = useState("");
-  const filteredEntries = EvacueeList().filter(
-    (entry) =>
-      entry.first_name.toLowerCase().includes(query.toLowerCase()) ||
-      entry.last_name.toLowerCase().includes(query.toLowerCase()) ||
-      entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
-      entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
-      entry.municipality.toLowerCase().includes(query.toLowerCase()) ||
-      entry.barangay.toLowerCase().includes(query.toLowerCase()) ||
-      entry.civil_status.toLowerCase().includes(query.toLowerCase())
-  );
+  // const filteredEntries = resEvacList().filter(
+  //   (entry) =>
+  //     entry.first_name.toLowerCase().includes(query.toLowerCase()) ||
+  //     entry.last_name.toLowerCase().includes(query.toLowerCase()) ||
+  //     entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
+  //     entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
+  //     entry.municipality.toLowerCase().includes(query.toLowerCase()) ||
+  //     entry.barangay.toLowerCase().includes(query.toLowerCase()) ||
+  //     entry.civil_status.toLowerCase().includes(query.toLowerCase())
+  // );
+
+  // const [startDate, setStartDate] = useState(null);
+  // const [endDate, setEndDate] = useState(null);
+
+  const handleFilter = () => {
+    // your filtering logic here, using startDate and endDate
+  };
 
   const calculateAge = (birthdate) => {
     const today = new Date();
@@ -70,16 +114,29 @@ const TableList = () => {
     }
     return age;
   };
+  let name;
+  let evacuationName;
+  const idToNameEvacuee = evacList.map((row) => {
+    const evacuee = evacueeList.find((evacuee) => evacuee.id === row.resident);
+    name = evacuee ? `${evacuee.first_name} ${evacuee.last_name}` : "";
+  });
+
+  const idToNameCenter = evacList.map((row) => {
+    const center = evacuationList.find(
+      (center) => center.id === row.evacuation
+    );
+    evacuationName = center ? `${center.name}` : "";
+  });
 
   return (
     <>
-      <Flex
+      {/* <Flex
         direction={{ sm: "column", md: "row" }}
         align="center"
         w="100%"
         justify="center"
-        py="1rem">
-        <Flex
+        py="1rem"> */}
+      {/* <Flex
           px="1rem"
           py="0.75rem"
           bg="transparent"
@@ -107,71 +164,40 @@ const TableList = () => {
           <Button p="0px" bg="transparent" w="16px" h="16px" variant="no-hover">
             <Icon as={FaPencilAlt} />
           </Button>
-        </Flex>
-      </Flex>
+        </Flex> */}
+      {/* </Flex> */}
+      {/* <Select></Select> */}
       <Flex direction="column" w="100%">
         <TableContainer maxH="50vh" overflowY="auto">
           <Table color={textColor} variant="striped" colorScheme="blue">
             <Thead>
               <Tr my=".8rem" pl="0px">
-                {/* <Th color="gray.400" ps="0px">
-                  ID
-                </Th> */}
-                <Th color="gray.400">Last Name</Th>
-                <Th color="gray.400">First Name</Th>
-                <Th color="gray.400">Middle Name</Th>
-                <Th color="gray.400">Municipality</Th>
-                <Th color="gray.400">Barangay</Th>
-                <Th color="gray.400">Contact Number</Th>
-                <Th color="gray.400">Gender</Th>
-                <Th color="gray.400">Birthday</Th>
-                <Th color="gray.400">Age</Th>
-                <Th color="gray.400">Civil Status</Th>
-                <Th color="gray.400">Occupation</Th>
-                <Th color="gray.400">Resident Status</Th>
-                <Th color="gray.400">PWD</Th>
-                <Th color="gray.400">Indigenous Person</Th>
-                <Th color="gray.400">Head of the Family</Th>
-                <Th color="gray.400" pr="0px">
-                  Household Number
-                </Th>
+                <Th color="gray.400">Resident Name</Th>
+                <Th color="gray.400">Evacuation Center</Th>
+                <Th color="gray.400">Family Function</Th>
+                <Th color="gray.400">Date </Th>
                 <Th color="gray.400" pr="0px">
                   Options
                 </Th>
               </Tr>
             </Thead>
             <Tbody>
-              {filteredEntries.map((row, index) => (
+              {filteredEvacueesList.map((row, index) => (
                 <Tr key={index}>
                   {/* <Td>{row.id}</Td> */}
-                  <Td>{row.last_name}</Td>
-                  <Td>{row.first_name}</Td>
-                  <Td>{row.middle_name}</Td>
-                  <Td>{row.municipality}</Td>
-                  <Td>{row.barangay}</Td>
-                  <Td>{row.contact_num}</Td>
-                  <Td>{row.gender}</Td>
-                  <Td>{row.birthday}</Td>
-                  <Td>{calculateAge(row.birthday)}</Td>
-                  <Td>{row.civil_status}</Td>
-                  <Td>{row.occupation}</Td>
-                  <Td>{row.resident_status}</Td>
-                  <Td>{row.is_pwd}</Td>
-                  <Td>{row.is_ip}</Td>
-                  <Td>{row.is_head}</Td>
-                  <Td>{row.household_num}</Td>
+                  <Td>{name}</Td>
+                  <Td>{evacuationName}</Td>
+                  <Td>{row.isHead}</Td>
+                  <Td>{row.date}</Td>
                   <Td>
                     <Flex justify="space-around">
                       <Button
-                        colorScheme="blue"
-                        variant="ghost"
-                        onClick={() => handleEditClick(row)}>
-                        <Icon as={FaPencilAlt} />
-                      </Button>
-                      <Button
                         colorScheme="red"
                         variant="ghost"
-                        onClick={() => evacueeDelete(row.id)}>
+                        onClick={() => {
+                          resEvacDelete(row.id);
+                          history.push("/admin/users");
+                        }}>
                         <Icon as={FaTrashAlt} />
                       </Button>
                     </Flex>
@@ -182,14 +208,6 @@ const TableList = () => {
           </Table>
         </TableContainer>
       </Flex>
-
-      <UpdateModal
-        isOpen={isOpen}
-        onClose={onClose}
-        initialRef={initialRef}
-        finalRef={finalRef}
-        {...selectedRow}
-      />
     </>
   );
 };

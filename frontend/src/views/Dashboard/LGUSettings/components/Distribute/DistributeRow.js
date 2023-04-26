@@ -10,15 +10,26 @@ import React, { useState, useEffect } from "react";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { StockinDelete } from "api/stockinAPI";
 import { useDisclosure } from "@chakra-ui/react";
-
-import UpdateModal from "./UpdateModal";
 import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
+import { RepackedList, RepackedUpdate, RepackedDelete } from "api/repackedAPI";
+import { evacDistributeDelete } from "api/distributedEvacuees";
 
 import { useHistory } from "react-router-dom";
 
-function StockinRow(props) {
-  const { id, givenBy, donor, dateReceived, itemID, unit, qty } = props;
+function DistributeRow(props) {
+  const {
+    id,
+    repackedItem,
+    calamity,
+    calamityDate,
+    dateDistributed,
+    evacuee,
+    headFamily,
+  } = props;
+
+  const history = useHistory();
+
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -26,51 +37,43 @@ function StockinRow(props) {
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const history = useHistory();
 
   const [itemName, setItemName] = useState("");
+  const repackedList = RepackedList();
 
   const entry1 = ItemList();
-  const selectedItem = entry1.find((item) => item.id === itemID);
-
-  useEffect(() => {
-    if (selectedItem) {
-      const itemNameCapitalized =
-        selectedItem.name.charAt(0).toUpperCase() + selectedItem.name.slice(1);
-      setItemName(itemNameCapitalized);
-    } else {
-      setItemName("");
-    }
-  }, [selectedItem]);
 
   React.useEffect(() => {
-    // document.body.style.overflow = "unset";
-    // Specify how to clean up after this effect:
     return function cleanup() {};
   });
 
-  const inventoryList = InventoryList(id, itemID);
+  // const inventoryList = InventoryList(id, itemID);
 
   const handleDelete = async () => {
-    const itemIDValueSubmit = itemID;
-    const preQty = qty;
+    const itemIDValueSubmit = repackedItem;
+    // const newInstance = instance;
     try {
       await Promise.all(
-        inventoryList.map(async (entry) => {
-          if (parseInt(entry.item) === parseInt(itemID)) {
-            let computedQty = parseFloat(entry.qty) - parseFloat(preQty);
-            const resultInventory = await InventoryUpdate(
+        repackedList.map(async (entry) => {
+          if (entry.id === parseInt(repackedItem)) {
+            const newInstance = parseInt(entry.StockinDeleteinstance) + 1;
+
+            const resultInventory = await RepackedUpdate(
               entry.id,
-              itemIDValueSubmit,
-              computedQty
+              entry.items,
+              entry.units,
+              entry.qty,
+              newInstance,
+              entry.reason,
+              entry.barangay
             );
           }
         })
       );
 
-      await StockinDelete(id);
+      await evacDistributeDelete(id);
       onClose();
-      history.push("/admin/dashboard");
+      history.push("/admin/resident-information");
     } catch (error) {
       alert("Failed");
     }
@@ -78,44 +81,34 @@ function StockinRow(props) {
 
   return (
     <>
-      <Box p="24px" bg={bgColor} my="15px" borderRadius="12px">
+      <Box py="10px" px="24px" bg={bgColor} my="15px" borderRadius="12px">
         <Flex justify="space-between" w="100%">
           <Flex direction="column" justify={"center"} maxWidth="70%">
-            <Text color={nameColor} fontSize="md" fontWeight="bold" mb="10px">
-              {itemName}
+            <Text color={nameColor} fontSize="md" fontWeight="bold" mb="5px">
+              {evacuee}
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-              Given by:{" "}
+              Calamity:{" "}
               <Text as="span" color="gray.500">
-                {givenBy}
-              </Text>
-            </Text>
-            {donor ? (
-              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-                Name:{" "}
-                <Text as="span" color="gray.500">
-                  {donor}
-                </Text>
-              </Text>
-            ) : (
-              <p></p>
-            )}
-            <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-              Date Received:{" "}
-              <Text as="span" color="gray.500">
-                {dateReceived}
+                {`${calamity} -  ${calamityDate}`}
               </Text>
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-              Unit:{" "}
+              Repacked Item:{" "}
               <Text as="span" color="gray.500">
-                {unit}
+                {repackedItem}
               </Text>
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-              Quantity:{" "}
+              Date Distributed:{" "}
               <Text as="span" color="gray.500">
-                {qty}
+                {dateDistributed}
+              </Text>
+            </Text>
+            <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+              Head of the Family:{" "}
+              <Text as="span" color="gray.500">
+                {headFamily === "yes" ? "Head of the Family" : "Member"}
               </Text>
             </Text>
           </Flex>
@@ -128,7 +121,7 @@ function StockinRow(props) {
               bg="transparent"
               mb={{ sm: "10px", md: "0px" }}
               me={{ md: "12px" }}
-              onClick={() => handleDelete(id, itemID)}>
+              onClick={() => handleDelete(id, repackedItem)}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />
                 <Text fontSize="sm" fontWeight="semibold">
@@ -136,36 +129,11 @@ function StockinRow(props) {
                 </Text>
               </Flex>
             </Button>
-            <Button p="0px" bg="transparent">
-              <Flex color={textColor} cursor="pointer" align="center" p="12px">
-                <Icon as={FaPencilAlt} me="4px" />
-                <Text fontSize="sm" fontWeight="semibold" onClick={onOpen}>
-                  EDIT
-                </Text>
-              </Flex>
-            </Button>
           </Flex>
         </Flex>
       </Box>
-
-      <UpdateModal
-        {...{
-          // addEntries,
-          id,
-          givenBy,
-          donor,
-          dateReceived,
-          itemID,
-          // unit,
-          qty,
-          isOpen,
-          onClose,
-          initialRef,
-          finalRef,
-        }}
-      />
     </>
   );
 }
 
-export default StockinRow;
+export default DistributeRow;

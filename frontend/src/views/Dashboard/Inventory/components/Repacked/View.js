@@ -23,7 +23,12 @@ import { RepackedList } from "api/repackedAPI";
 import { ItemList } from "api/itemAPI";
 import { InventoryList } from "api/inventoryAPI";
 
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+
 const View = () => {
+  let { userBarangay } = useContext(AuthContext);
+
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
   const borderColor = useColorModeValue("#dee2e6", "gray.500");
@@ -38,8 +43,9 @@ const View = () => {
 
   const entries = RepackedList().filter(
     (entry) =>
-      entry.items.toLowerCase().includes(query.toLowerCase()) ||
-      entry.reason.toLowerCase().includes(query.toLowerCase())
+      entry.barangay === userBarangay &&
+      (entry.items.toLowerCase().includes(query.toLowerCase()) ||
+        entry.reason.toLowerCase().includes(query.toLowerCase()))
     // entry.unit.toLowerCase().includes(query.toLowerCase())
   );
 
@@ -50,6 +56,8 @@ const View = () => {
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+
+  let countItem = 1;
 
   return (
     <>
@@ -118,7 +126,6 @@ const View = () => {
             </Flex>
             <Flex direction="column" w="100%">
               {entries.map((row, index) => {
-                // console.log(row.unit);
                 return (
                   <RepackedRow
                     key={index}
@@ -129,12 +136,8 @@ const View = () => {
                     qty={row.qty}
                     instance={row.instance}
                     reason={row.reason}
-
-                    // givenBy={row.givenBy}
-                    // donor={row.donor}
-                    // dateReceived={row.dateReceived}
-                    // itemID={row.item}
-                    // unit={row.unit}
+                    barangay={row.barangay}
+                    countItem={countItem++}
                   />
                 );
               })}
@@ -142,12 +145,7 @@ const View = () => {
           </Flex>
         </CardBody>
       </Card>
-      {/* {addEntries.map((row, index) => ( */}
       <AddModal
-        // key={index}
-        // itemName={row.name}
-        // itemUnit={row.unit}
-        // inventoryEntries={addEntries}
         isOpen={isOpen}
         onClose={onClose}
         initialRef={initialRef}

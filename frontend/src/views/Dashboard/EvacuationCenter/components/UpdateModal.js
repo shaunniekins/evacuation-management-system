@@ -15,6 +15,7 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { EvacuationCenterUpdate } from "api/evacuationCenterAPI";
 import { MunicipalityList } from "api/municipalityAPI";
 import { BarangayList } from "api/barangayAPI";
+import { useHistory } from "react-router-dom";
 
 const UpdateModal = ({
   id,
@@ -27,6 +28,8 @@ const UpdateModal = ({
   initialRef,
   finalRef,
 }) => {
+  const history = useHistory();
+
   const barangayEntries = BarangayList();
   const municipalityEntries = MunicipalityList();
   const [barangays, setBarangays] = useState([{ name: barangay }]);
@@ -50,6 +53,7 @@ const UpdateModal = ({
         event.target.capacity.value
       ); // call the API function
       onClose();
+      history.push("/admin/barangay-information");
     } catch (error) {
       alert("Failed");
     }

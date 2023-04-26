@@ -17,6 +17,8 @@ import { StockinUpdate } from "api/stockinAPI";
 import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 
+import { useHistory } from "react-router-dom";
+
 const UpdateModal = ({
   addEntries,
   id,
@@ -32,6 +34,8 @@ const UpdateModal = ({
   finalRef,
 }) => {
   const inventoryList = InventoryList();
+
+  const history = useHistory();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -73,6 +77,7 @@ const UpdateModal = ({
       }
 
       onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -139,25 +144,30 @@ const UpdateModal = ({
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel>From</FormLabel>
-              <Select
-                required
-                id="givenBy-field"
-                name="givenBy"
-                defaultValue={givenBy}
-                ref={initialRef}
-                placeholder="--Select option--">
-                <option value="Government">Government</option>
-                <option value="Private">Private</option>
-              </Select>
-              <FormLabel>Name</FormLabel>
-              <Input
-                type="text"
-                id="donor-field"
-                name="donor"
-                defaultValue={donor}
-                ref={initialRef}
-                placeholder="Name (Optional)"
-              />
+              <Flex justify={"space-between"} gap={2}>
+                <Select
+                  required
+                  id="givenBy-field"
+                  name="givenBy"
+                  defaultValue={givenBy}
+                  ref={initialRef}
+                  w={"40%"}
+                  placeholder="-- Select --">
+                  <option value="Government">Government</option>
+                  <option value="Private">Private</option>
+                </Select>
+                {/* <FormLabel>Name</FormLabel> */}
+                <Input
+                  type="text"
+                  id="donor-field"
+                  name="donor"
+                  defaultValue={donor}
+                  ref={initialRef}
+                  placeholder="Name (Optional)"
+                  w={"60%"}
+                />
+              </Flex>
+
               <FormLabel>Date received</FormLabel>
               <Input
                 required
@@ -190,6 +200,16 @@ const UpdateModal = ({
                 </Select>
                 <Input
                   required
+                  type="text"
+                  id="qty-field"
+                  name="qty"
+                  defaultValue={qty}
+                  ref={initialRef}
+                  placeholder="Quantity"
+                  w={"30%"}
+                />
+                <Input
+                  required
                   disabled
                   type="text"
                   id="unit-field"
@@ -220,16 +240,7 @@ const UpdateModal = ({
                 ref={initialRef}
                 placeholder="Unit"
               /> */}
-              <FormLabel>Quantity</FormLabel>
-              <Input
-                required
-                type="text"
-                id="qty-field"
-                name="qty"
-                defaultValue={qty}
-                ref={initialRef}
-                placeholder="Quantity"
-              />
+              {/* <FormLabel>Quantity</FormLabel> */}
             </FormControl>
           </ModalBody>
 

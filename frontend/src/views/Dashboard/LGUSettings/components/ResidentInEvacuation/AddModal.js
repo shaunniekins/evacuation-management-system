@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Button,
+  Flex,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -9,28 +10,64 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Select,
 } from "@chakra-ui/react";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
-import { CalamityAdd } from "api/calamityAPI";
+import { useHistory } from "react-router-dom";
+// import { CalamityAdd } from "api/calamityAPI";
+import { resEvacAdd } from "api/residentInEvacuationAPI";
+
+import { EvacueeList } from "api/evacueeAPI";
+
+import { EvacuationCenterList } from "api/evacuationCenterAPI";
 
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const resident = event.target.resident.value;
+    const center = event.target.center.value;
+    const isHead = event.target.isHead.value === "Head" ? "Yes" : "No";
+    const date = event.target.date.value;
+
     try {
-      const result = await CalamityAdd(
-        event.target.name.value,
-        event.target.date.value
-      ); // call the API function
+      const result = await resEvacAdd(resident, center, isHead, date); // call the API function
       onClose();
+      history.push("/admin/resident-information");
     } catch (error) {
       alert("Failed");
     }
   };
 
+  const residentEntries = EvacueeList();
+  const centerEntries = EvacuationCenterList();
+
   const [date, setDate] = useState(new Date());
 
   // Format date as "yyyy-mm-dd"
   const formattedDate = date.toISOString().slice(0, 10);
+
+  const [unitValue, setUnitValue] = useState("");
+
+  const handleSelectChange = (event) => {
+    const selectedValue = parseInt(event.target.value);
+
+    const matchingEntry = residentEntries.find(
+      (entry) => entry.id === selectedValue
+    );
+
+    if (matchingEntry) {
+      setUnitValue(matchingEntry.is_head === "YES" ? "Head" : "Member");
+    } else {
+      setUnitValue("");
+    }
+
+    // const selectedOption = event.target.options[event.target.selectedIndex];
+    // const selectedID = selectedOption.getAttribute("data-id");
+    // setItemIDValue(selectedID);
+  };
 
   return (
     <Modal
@@ -39,25 +76,57 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
       isOpen={isOpen}
       onClose={onClose}
       closeOnOverlayClick={false}
-      isCentered
-    >
+      isCentered>
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>
-          <ModalHeader>Add New Calamity</ModalHeader>
+          <ModalHeader>Add Evacuee</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel>Calamity name</FormLabel>
-              <Input
-                required
-                type="text"
-                id="name-field"
-                name="name"
-                ref={initialRef}
-                placeholder="Calamity name"
-              />
-              <FormLabel>Calamity date</FormLabel>
+              <FormLabel>Resident</FormLabel>
+              <Flex justify={"space-between"} gap={2}>
+                <Select
+                  required
+                  id="resident-field"
+                  name="resident"
+                  placeholder="--Select option--"
+                  onChange={handleSelectChange}>
+                  {residentEntries.map((entry) => (
+                    <option key={entry.id} value={entry.id} data-id={entry.id}>
+                      {`${entry.first_name} ${entry.last_name}`}
+                    </option>
+                  ))}
+                </Select>
+                <Input
+                  required
+                  disabled
+                  // w={"2rem"}
+                  type="text"
+                  id="isHead-field"
+                  name="isHead"
+                  ref={initialRef}
+                  placeholder="Function"
+                  w={"30%"}
+                  value={unitValue}
+                />
+              </Flex>
+              <FormLabel>Evacuation Center</FormLabel>
+              <Flex justify={"space-between"} gap={2}>
+                <Select
+                  id="center-field"
+                  name="center"
+                  placeholder="--Select option-- (N/A)"
+                  // onChange={handleSelectChange}
+                >
+                  {centerEntries.map((entry) => (
+                    <option key={entry.id} value={entry.id} data-id={entry.id}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </Select>
+              </Flex>
+              <FormLabel>Date Received</FormLabel>
               <Input
                 required
                 type="date"
@@ -65,7 +134,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
                 name="date"
                 defaultValue={formattedDate}
                 ref={initialRef}
-                placeholder="Calamity date"
+                placeholder="Date Received"
               />
             </FormControl>
           </ModalBody>

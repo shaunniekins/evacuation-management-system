@@ -1,7 +1,7 @@
 from rest_framework import fields, serializers
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from backend.models import Resident, Municipality, Barangay, Evacuation, ResidentInEvacuation, Calamity, Item, Inventory, StockedIn, Repacked, Distributed, CashDonation
+from backend.models import Resident, Municipality, Barangay, Evacuation, ResidentInEvacuation, Calamity, Item, Inventory, InventoryPerBarangay, DistributionBarangay, StockedIn, Repacked, Distributed, CashDonation
 
 # from rest_framework import serializers
 from backend.models import CustomUser
@@ -62,11 +62,11 @@ class ResidentInEvacuationSerializer(serializers.ModelSerializer):
     resident = serializers.PrimaryKeyRelatedField(
         queryset=Resident.objects.all())
     evacuation = serializers.PrimaryKeyRelatedField(
-        queryset=Evacuation.objects.all())
+        queryset=Evacuation.objects.all(), allow_null=True,  required=False)
 
     class Meta:
         model = ResidentInEvacuation
-        fields = ('id', 'resident', 'evacuation', 'date')
+        fields = ('id', 'resident', 'evacuation', 'isHead', 'date')
 
 
 class CalamitySerializer(serializers.ModelSerializer):
@@ -91,6 +91,20 @@ class InventorySerializer(serializers.ModelSerializer):
 
     def get_unit(self, obj):
         return obj.item.unit
+
+
+class InventoryPerBarangaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = InventoryPerBarangay
+        fields = ('id', 'item', 'unit', 'qty', 'barangay')
+
+
+class DistributionBarangaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DistributionBarangay
+        fields = ('id', 'item', 'unit', 'qty', 'barangay', 'date')
 
 
 class StockedInSerializer(serializers.ModelSerializer):
@@ -128,14 +142,15 @@ class RepackedSerializer(serializers.ModelSerializer):
     #     return obj.items.qty
     class Meta:
         model = Repacked
-        fields = ('id', 'items', 'units', 'qty', 'instance', 'reason')
+        fields = ('id', 'items', 'units', 'qty',
+                  'instance', 'reason', 'barangay')
 
 
 class DistributeReliefGoodsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Distributed
-        fields = ('id', 'calamity', 'calamityDate',
-                  'dateDistributed', 'headFamily')
+        fields = ('id', 'repackedItem', 'calamity', 'calamityDate',
+                  'dateDistributed', 'evacuee', 'headFamily')
 
 
 class CashDonationSerializer(serializers.ModelSerializer):

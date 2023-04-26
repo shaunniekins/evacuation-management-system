@@ -44,6 +44,12 @@ urlpatterns = [
     path('inventory/', views.InventoryList),
     path('inventory/<int:pk>', views.InventoryList),
 
+    path('barangayinventory/', views.InventoryPerBarangayAPI),
+    path('barangayinventory/<int:pk>', views.InventoryPerBarangayAPI),
+
+    path('distributionbarangay/', views.DistributeBarangayAPI),
+    path('distributionbarangay/<int:pk>', views.DistributeBarangayAPI),
+
     path('stockin/', views.StockedInAPI),
     path('stockin/<int:pk>', views.StockedInAPI),
 

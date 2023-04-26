@@ -24,6 +24,11 @@ import React, { useState } from "react";
 import { EvacueeList, evacueeDelete } from "api/evacueeAPI";
 import UpdateModal from "./UpdateModal";
 
+import { useHistory } from "react-router-dom";
+
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+
 const TableList = () => {
   // const textColor = useColorModeValue("gray.700", "white");
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -33,6 +38,11 @@ const TableList = () => {
     "linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)",
     "gray.800"
   );
+
+  let { userPosition, userBarangay } = useContext(AuthContext);
+  const isAdmin = userPosition == "Personnel" ? false : true;
+
+  const history = useHistory();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -46,16 +56,27 @@ const TableList = () => {
     onOpen();
   };
   const [query, setQuery] = useState("");
-  const filteredEntries = EvacueeList().filter(
-    (entry) =>
-      entry.first_name.toLowerCase().includes(query.toLowerCase()) ||
-      entry.last_name.toLowerCase().includes(query.toLowerCase()) ||
-      entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
-      entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
-      entry.municipality.toLowerCase().includes(query.toLowerCase()) ||
-      entry.barangay.toLowerCase().includes(query.toLowerCase()) ||
-      entry.civil_status.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredEntries = EvacueeList().filter((entry) => {
+    if (isAdmin) {
+      return (
+        entry.first_name.toLowerCase().includes(query.toLowerCase()) ||
+        entry.last_name.toLowerCase().includes(query.toLowerCase()) ||
+        entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
+        entry.municipality.toLowerCase().includes(query.toLowerCase()) ||
+        entry.barangay.toLowerCase().includes(query.toLowerCase()) ||
+        entry.civil_status.toLowerCase().includes(query.toLowerCase())
+      );
+    } else {
+      return (
+        entry.barangay === userBarangay &&
+        (entry.first_name.toLowerCase().includes(query.toLowerCase()) ||
+          entry.last_name.toLowerCase().includes(query.toLowerCase()) ||
+          entry.occupation.toLowerCase().includes(query.toLowerCase()) ||
+          entry.municipality.toLowerCase().includes(query.toLowerCase()) ||
+          entry.civil_status.toLowerCase().includes(query.toLowerCase()))
+      );
+    }
+  });
 
   const calculateAge = (birthdate) => {
     const today = new Date();
@@ -171,7 +192,10 @@ const TableList = () => {
                       <Button
                         colorScheme="red"
                         variant="ghost"
-                        onClick={() => evacueeDelete(row.id)}>
+                        onClick={() => {
+                          evacueeDelete(row.id);
+                          history.push("/admin/resident-information");
+                        }}>
                         <Icon as={FaTrashAlt} />
                       </Button>
                     </Flex>

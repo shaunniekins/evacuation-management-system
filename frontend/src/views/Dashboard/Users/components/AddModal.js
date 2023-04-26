@@ -21,6 +21,9 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { UserAdd } from "api/usersAPI";
 import { MunicipalityList } from "api/municipalityAPI";
 import { BarangayList } from "api/barangayAPI";
+import { UsersList } from "api/usersAPI";
+
+import { useHistory } from "react-router-dom";
 
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const id = null;
@@ -32,6 +35,13 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const usersList = UsersList();
+  const usernames = usersList.map((list) => {
+    return list.username;
+  });
+
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     // console.log("Image Add: ", event.target.image.files[0]);
@@ -39,6 +49,15 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     if (event.target.password.value !== event.target.confirm_password.value) {
       // Display an error message
       alert("Password and confirm password do not match");
+      return;
+    }
+
+    if (
+      usernames
+        .map((username) => username.toLowerCase())
+        .includes(event.target.username.value.toLowerCase())
+    ) {
+      alert("Username already exists");
       return;
     }
 
@@ -66,6 +85,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
       ); // call the API function
       setFormData({});
       onClose();
+      history.push("/admin/lgu-settings");
     } catch (error) {
       alert("Failed");
     }

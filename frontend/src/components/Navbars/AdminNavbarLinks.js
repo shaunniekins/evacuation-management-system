@@ -39,6 +39,8 @@ import RouteComponent from "routes";
 import { useColorMode } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 
+import UpdateModal from "./UpdateUserPassword";
+
 import { useContext } from "react";
 import AuthContext from "context/AuthContext";
 
@@ -57,6 +59,12 @@ export default function HeaderLinks(props) {
     navbarIcon = "white";
     mainText = "white";
   }
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleMenuClick = () => {
+    setIsOpen(true);
+  };
   // const settingsRef = React.useRef();
 
   let { logoutUser } = useContext(AuthContext);
@@ -150,6 +158,10 @@ export default function HeaderLinks(props) {
             </MenuItem>
           </MenuGroup>
           <MenuDivider />
+          {/* <MenuItem onClick={handleMenuClick}>
+            Change username / password
+          </MenuItem> */}
+          {isOpen && <UpdateModal onClose={() => setIsOpen(false)} />}
           <MenuItem onClick={() => toggleColorMode()}>
             {colorMode === "dark" ? (
               <>
@@ -165,7 +177,7 @@ export default function HeaderLinks(props) {
               </Flex>
             )}
           </MenuItem>
-          <MenuItem>Change Password</MenuItem>
+
           <MenuItem onClick={logoutUser}>Logout</MenuItem>
         </MenuList>
       </Menu>

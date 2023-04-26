@@ -14,12 +14,16 @@ import { useDisclosure } from "@chakra-ui/react";
 import { EvacueeList } from "api/evacueeAPI";
 import { EvacuationCenterList } from "api/evacuationCenterAPI";
 
+import { useHistory } from "react-router-dom";
+
 function ItemRow(props) {
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
-  const { id, resident, evacuation, date } = props;
+  const { id, resident, evacuation, isHead, date } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const history = useHistory();
 
   const residentEntry = EvacueeList();
   const evacuationCenterEntry = EvacuationCenterList();
@@ -49,6 +53,11 @@ function ItemRow(props) {
                 : ""}
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+              <Text as="span" color="gray.400">
+                {isHead === "Yes" ? "Head of the Family" : ""}
+              </Text>
+            </Text>
+            <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               {matchingEvacuationCenterEntry && (
                 <Text as="span" color="gray.400">
                   {matchingEvacuationCenterEntry.name}
@@ -73,7 +82,7 @@ function ItemRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await resEvacDelete(id);
-                // window.location.reload(); // reload the page
+                history.push("/admin/resident-information");
               }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />

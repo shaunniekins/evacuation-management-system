@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { MunicipalityUpdate } from "api/municipalityAPI";
+import { useHistory } from "react-router-dom";
 
 const UpdateModal = ({
   id,
@@ -21,6 +22,8 @@ const UpdateModal = ({
   initialRef,
   finalRef,
 }) => {
+  const history = useHistory();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -30,6 +33,7 @@ const UpdateModal = ({
         event.target.province.value
       ); // call the API function
       onClose();
+      history.push("/admin/calamity");
     } catch (error) {
       alert("Failed");
     }
@@ -42,8 +46,7 @@ const UpdateModal = ({
       isOpen={isOpen}
       onClose={onClose}
       closeOnOverlayClick={false}
-      isCentered
-    >
+      isCentered>
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>
