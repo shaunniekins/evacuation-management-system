@@ -150,7 +150,7 @@ class DistributeReliefGoodsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Distributed
         fields = ('id', 'repackedItem', 'calamity', 'calamityDate',
-                  'dateDistributed', 'evacuee', 'headFamily')
+                  'dateDistributed', 'evacuee', 'headFamily', 'is_distributed')
 
 
 class CashDonationSerializer(serializers.ModelSerializer):

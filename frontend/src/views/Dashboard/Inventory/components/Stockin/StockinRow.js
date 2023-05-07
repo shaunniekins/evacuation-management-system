@@ -30,6 +30,7 @@ function StockinRow(props) {
 
   const [itemName, setItemName] = useState("");
 
+  const addEntries = ItemList();
   const entry1 = ItemList();
   const selectedItem = entry1.find((item) => item.id === itemID);
 
@@ -150,7 +151,7 @@ function StockinRow(props) {
 
       <UpdateModal
         {...{
-          // addEntries,
+          addEntries,
           id,
           givenBy,
           donor,

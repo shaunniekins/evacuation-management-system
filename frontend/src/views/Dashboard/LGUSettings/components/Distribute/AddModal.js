@@ -55,7 +55,9 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const barangayInventoryList = BarangayInventoryList();
   const evacueeDistributeList = evacDistributeList();
 
-  let { userBarangay } = useContext(AuthContext);
+  let { userPosition, userBarangay } = useContext(AuthContext);
+  const isAdmin = userPosition == "Personnel" ? false : true;
+
   const textColor = useColorModeValue("gray.700", "white");
   const [date, setDate] = useState(new Date());
   const formattedDate = date.toISOString().slice(0, 10);
@@ -75,6 +77,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     const dateDistributed = event.target.dateDistributed.value;
     const evacuee = displayName;
     const headFamily = event.target.isHead.value === "Head" ? "yes" : "no";
+    const is_distributed = 0;
 
     // console.log("repackedItem: ", repackedItem);
     // console.log("calamity: ", calamity);
@@ -83,18 +86,19 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     // console.log("evacuee: ", evacuee);
     // console.log("headFamily: ", headFamily);
 
-    // try {
-    //   const result = await evacDistributeAdd(
-    //     repackedItem,
-    //     calamity,
-    //     calamityDate,
-    //     dateDistributed,
-    //     evacuee,
-    //     headFamily
-    //   );
-    // } catch (error) {
-    //   alert("Failed");
-    // }
+    try {
+      const result = await evacDistributeAdd(
+        repackedItem,
+        calamity,
+        calamityDate,
+        dateDistributed,
+        evacuee,
+        headFamily,
+        is_distributed
+      );
+    } catch (error) {
+      alert("Failed");
+    }
 
     try {
       // let itemExists = false;
@@ -137,32 +141,17 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     return `Repacked #${count++} ✖ ${instance} items`;
   };
 
-  const idConvertNameOption = (itemID) => {
-    const selectedItem = entry1.find((item) => item.id === itemID);
-    if (selectedItem) {
-      return `${selectedItem.name}`;
-    } else {
-      return "";
-    }
-  };
-
   const handleSelectChange = (event) => {
     const selectedValue = parseInt(event.target.value);
-    // console.log("selectedValue", selectedValue);
+    setDisplayName(selectedValue);
 
-    const matchingEntry = evacueesList.find(
-      (entry) => entry.resident === selectedValue
+    const matchingEntry = residentEntries.find(
+      (entry) => entry.id === selectedValue
     );
-    const matchingResidentEntry = residentEntries.find(
-      (entry) => entry.id === matchingEntry.resident
-    );
-
     if (matchingEntry) {
-      setDisplayName(
-        `${matchingResidentEntry.first_name} ${matchingResidentEntry.last_name}`
+      setUnitValue(
+        matchingEntry.is_head.toLowerCase() === "yes" ? "Head" : "Member"
       );
-
-      setUnitValue(matchingEntry.is_head === "yes" ? "Head" : "Member");
     } else {
       setUnitValue("");
     }
@@ -171,6 +160,17 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     const selectedID = selectedOption.getAttribute("data-id");
     setItemIDValue(selectedID);
   };
+
+  const uniqueEvacuees = [];
+  const uniqueEvacueesSet = new Set();
+
+  // Loop through the evacueesList and add unique values to uniqueEvacuees array
+  evacueesList.forEach((entry) => {
+    if (!uniqueEvacueesSet.has(entry.resident)) {
+      uniqueEvacueesSet.add(entry.resident);
+      uniqueEvacuees.push(entry);
+    }
+  });
 
   return (
     <Modal
@@ -230,14 +230,29 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
                   name="evacuee"
                   placeholder="--Select option--"
                   onChange={handleSelectChange}>
-                  {evacueesList.map((entry) => (
-                    <option
-                      key={entry.id}
-                      value={entry.resident}
-                      data-id={entry.resident}>
-                      {displayName}
-                    </option>
-                  ))}
+                  {uniqueEvacuees
+                    .filter((entry) => {
+                      const resident = residentEntries.find(
+                        (resident) => resident.id === entry.resident
+                      );
+                      return resident && resident.barangay === userBarangay;
+                    })
+                    .map((entry) => {
+                      const resident = residentEntries.find(
+                        (resident) => resident.id === entry.resident
+                      );
+                      const residentName = resident
+                        ? `${resident.first_name} ${resident.last_name}`
+                        : "";
+                      return (
+                        <option
+                          key={entry.id}
+                          value={entry.resident}
+                          data-id={entry.resident}>
+                          {residentName}
+                        </option>
+                      );
+                    })}
                 </Select>
                 <Input
                   required

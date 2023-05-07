@@ -125,6 +125,7 @@ class Distributed(models.Model):
     dateDistributed = models.DateField()
     evacuee = models.CharField(max_length=50)
     headFamily = models.CharField(max_length=3)
+    is_distributed = models.IntegerField(default=0)
 
 
 class CashDonation(models.Model):

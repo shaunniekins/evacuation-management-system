@@ -21,6 +21,9 @@ import { EvacueeList } from "api/evacueeAPI";
 
 import { EvacuationCenterList } from "api/evacuationCenterAPI";
 
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const history = useHistory();
 
@@ -43,6 +46,8 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
 
   const residentEntries = EvacueeList();
   const centerEntries = EvacuationCenterList();
+
+  let { userPosition, userBarangay } = useContext(AuthContext);
 
   const [date, setDate] = useState(new Date());
 
@@ -92,12 +97,18 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
                   name="resident"
                   placeholder="--Select option--"
                   onChange={handleSelectChange}>
-                  {residentEntries.map((entry) => (
-                    <option key={entry.id} value={entry.id} data-id={entry.id}>
-                      {`${entry.first_name} ${entry.last_name}`}
-                    </option>
-                  ))}
+                  {residentEntries
+                    .filter((entry) => entry.barangay === userBarangay)
+                    .map((entry) => (
+                      <option
+                        key={entry.id}
+                        value={entry.id}
+                        data-id={entry.id}>
+                        {`${entry.first_name} ${entry.last_name}`}
+                      </option>
+                    ))}
                 </Select>
+
                 <Input
                   required
                   disabled

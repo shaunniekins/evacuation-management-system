@@ -85,7 +85,7 @@ const RouteComponent = () => {
     },
     {
       path: "/lgu-settings",
-      name: "LGU Settings",
+      name: "Relief Settings",
       icon: <SettingsIcon color="inherit" />,
       component: LGUSettings,
       layout: "/admin",

@@ -22,7 +22,8 @@ export const evacDistributeAdd = async (
   calamityDate,
   dateDistributed,
   evacuee,
-  headFamily
+  headFamily,
+  is_distributed
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/distributed/", {
@@ -38,6 +39,7 @@ export const evacDistributeAdd = async (
         dateDistributed: dateDistributed,
         evacuee: evacuee,
         headFamily: headFamily,
+        is_distributed: is_distributed,
       }),
     });
     const data = await response.json();
@@ -55,7 +57,8 @@ export const evacDistributeUpdate = async (
   calamityDate,
   dateDistributed,
   evacuee,
-  headFamily
+  headFamily,
+  is_distributed
 ) => {
   try {
     const response = await fetch(
@@ -73,6 +76,7 @@ export const evacDistributeUpdate = async (
           dateDistributed: dateDistributed,
           evacuee: evacuee,
           headFamily: headFamily,
+          is_distributed: is_distributed,
         }),
       }
     );

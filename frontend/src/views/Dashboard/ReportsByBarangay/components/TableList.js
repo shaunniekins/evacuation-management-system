@@ -54,21 +54,19 @@ const TableList = ({ startDate, endDate }) => {
 
   const filteredEvacueesList = resEvacList().filter((entry) => {
     if (!isAdmin) {
-      if (entry.barangay === userBarangay) {
+      const evacuee = evacueeList.find(
+        (evacuee) => evacuee.id === entry.resident
+      );
+      if (evacuee && evacuee.barangay === userBarangay) {
         if (startDate && endDate) {
           const date = new Date(entry.date);
           return date >= new Date(startDate) && date <= new Date(endDate);
         }
         return true;
       }
-      return false; // <-- return false if the barangay doesn't match
-    } else {
-      if (startDate && endDate) {
-        const date = new Date(entry.date);
-        return date >= new Date(startDate) && date <= new Date(endDate);
-      }
-      return true;
+      return false;
     }
+    return true;
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();

@@ -6,16 +6,19 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { Checkbox, CheckboxGroup } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { StockinDelete } from "api/stockinAPI";
 import { useDisclosure } from "@chakra-ui/react";
 import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
+import { evacDistributeUpdate } from "api/distributedEvacuees";
 import { RepackedList, RepackedUpdate, RepackedDelete } from "api/repackedAPI";
 import { evacDistributeDelete } from "api/distributedEvacuees";
 
 import { useHistory } from "react-router-dom";
+import { EvacueeList } from "api/evacueeAPI";
 
 function DistributeRow(props) {
   const {
@@ -26,6 +29,7 @@ function DistributeRow(props) {
     dateDistributed,
     evacuee,
     headFamily,
+    is_distributed,
   } = props;
 
   const history = useHistory();
@@ -46,6 +50,12 @@ function DistributeRow(props) {
   React.useEffect(() => {
     return function cleanup() {};
   });
+
+  const residentEntry = EvacueeList();
+
+  const matchingResidentEntry = residentEntry.find(
+    (entry) => entry.id === parseInt(evacuee)
+  );
 
   // const inventoryList = InventoryList(id, itemID);
 
@@ -79,13 +89,34 @@ function DistributeRow(props) {
     }
   };
 
+  const [isCheckedDistributed, setIsCheckedDistributed] =
+    useState(is_distributed);
+
+  const handleCheckboxChange = () => {
+    const updatedValue = !isCheckedDistributed;
+    setIsCheckedDistributed(updatedValue);
+
+    evacDistributeUpdate(
+      id,
+      repackedItem,
+      calamity,
+      calamityDate,
+      dateDistributed,
+      evacuee,
+      headFamily,
+      updatedValue ? 1 : 0
+    );
+  };
+
   return (
     <>
       <Box py="10px" px="24px" bg={bgColor} my="15px" borderRadius="12px">
         <Flex justify="space-between" w="100%">
           <Flex direction="column" justify={"center"} maxWidth="70%">
             <Text color={nameColor} fontSize="md" fontWeight="bold" mb="5px">
-              {evacuee}
+              {matchingResidentEntry
+                ? `${matchingResidentEntry.first_name} ${matchingResidentEntry.last_name}`
+                : ""}
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               Calamity:{" "}
@@ -116,6 +147,14 @@ function DistributeRow(props) {
             direction={{ sm: "column", md: "row" }}
             align="center"
             p={{ md: "24px" }}>
+            <Checkbox
+              isChecked={isCheckedDistributed}
+              onChange={handleCheckboxChange}>
+              <Text fontSize="sm" fontWeight="semibold">
+                DISTRIBUTED
+              </Text>
+            </Checkbox>
+
             <Button
               p="0px"
               bg="transparent"

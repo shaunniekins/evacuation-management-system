@@ -35,6 +35,7 @@ const UpdateModal = ({
 }) => {
   const inventoryList = InventoryList();
 
+  // console.log("AddEntries: ", addEntries);
   const history = useHistory();
 
   const handleSubmit = async (event) => {
@@ -55,7 +56,7 @@ const UpdateModal = ({
         // event.target.item.value,
         itemIDValueSubmit,
         // event.target.unit.value,
-        qty
+        newQty
       ); // call the API function
     } catch (error) {
       alert("Failed");

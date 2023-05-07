@@ -57,6 +57,7 @@ function View() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
       const result = await evacueeAdd(
         event.target.last_name.value,

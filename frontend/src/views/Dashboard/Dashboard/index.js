@@ -11,15 +11,6 @@ import {
   SupportIcon,
 } from "components/Icons/Icons.js";
 import React, { useEffect, useState } from "react";
-import {
-  getEvacueeCount,
-  getFamilyCount,
-  getMaleCount,
-  getFemaleCount,
-  getEvacuationCenterCount,
-  getBarangayCount,
-  getBarangayList,
-} from "api/getListAPI";
 import MiniStatistics from "./components/MiniStatistics";
 
 import { useContext } from "react";
@@ -54,42 +45,36 @@ export default function Dashboard() {
       const evacuee = evacueeList.find(
         (e) => e.id === residentId && e.barangay === userBarangay
       );
-      if (evacuee) {
-        if (evacuee.gender.toLowerCase() === "male") maleNum++;
-        else if (evacuee.gender.toLowerCase() === "female") femaleNum++;
-
-        if (evacuee.is_head.toLowerCase() === "yes") familyNum++;
-      }
 
       if (evacuee) {
-        if (evacuee.gender.toLowerCase() === "male") maleNum++;
-        else if (evacuee.gender.toLowerCase() === "female") femaleNum++;
+        // console.log("gender: ", evacuee.gender.toLowerCase());
+        if (evacuee.gender.toLowerCase() === "male") ++maleNum;
+        else if (evacuee.gender.toLowerCase() === "female") ++femaleNum;
 
-        if (evacuee.is_head.toLowerCase() === "yes") familyNum++;
+        if (evacuee.is_head.toLowerCase() === "yes") ++familyNum;
       }
     }
-  }
 
-  if (isAdmin) {
+    for (let i = 0; i < evacuationCenterList.length; i++) {
+      if (evacuationCenterList[i].barangay === userBarangay) {
+        ++evacuationNum;
+      }
+    }
+  } else if (isAdmin) {
     for (let i = 0; i < evacList.length; i++) {
       const residentId = evacList[i].resident;
       const evacuee = evacueeList.find((e) => e.id === residentId);
       if (evacuee) {
-        if (evacuee.gender.toLowerCase() === "male") maleNum++;
-        else if (evacuee.gender.toLowerCase() === "female") femaleNum++;
+        if (evacuee.gender.toLowerCase() === "male") {
+          ++maleNum;
+        } else if (evacuee.gender.toLowerCase() === "female") {
+          ++femaleNum;
+        }
 
-        if (evacuee.is_head.toLowerCase() === "yes") familyNum++;
+        if (evacuee.is_head.toLowerCase() === "yes") ++familyNum;
       }
     }
-  }
-  if (!isAdmin) {
-    for (let i = 0; i < evacuationCenterList.length; i++) {
-      if (evacuationCenterList[i].barangay === userBarangay) {
-        evacuationNum++;
-      }
-    }
-  }
-  if (isAdmin) {
+
     evacuationNum = evacuationCenterList.length;
   }
 

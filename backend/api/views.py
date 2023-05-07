@@ -602,7 +602,7 @@ def RepackedAPI(request, pk=0):
         return Response("Repacked Item Deleted Successfully")
 
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def DistributedAPI(request, pk=0):
     if request.method == 'GET':
         distributed = Distributed.objects.all()
@@ -616,6 +616,19 @@ def DistributedAPI(request, pk=0):
         if distributed_serializer.is_valid():
             distributed_serializer.save()
             return Response("Data Added Successfully", status=status.HTTP_201_CREATED)
+        return Response(distributed_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PUT':
+        try:
+            distributed = Distributed.objects.get(id=pk)
+        except Distributed.DoesNotExist:
+            return Response("Item Not Found", status=status.HTTP_404_NOT_FOUND)
+
+        distributed_serializer = DistributeReliefGoodsSerializer(
+            distributed, data=request.data)
+        if distributed_serializer.is_valid():
+            distributed_serializer.save()
+            return Response("Updated Successfully")
         return Response(distributed_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':

@@ -18,6 +18,9 @@ import { resEvacList } from "api/residentInEvacuationAPI";
 import ItemRow from "./ItemRow";
 import { EvacueeList } from "api/evacueeAPI";
 
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
@@ -30,16 +33,32 @@ const View = () => {
   const [query, setQuery] = useState("");
   const residentEntry = EvacueeList();
 
-  const entries = resEvacList().filter(
-    (entry) =>
-      (entry.resident &&
-        entry.resident
+  let { userBarangay } = useContext(AuthContext);
+
+  const entries = resEvacList().filter((entry) => {
+    const matchingEntry = residentEntry.find(
+      (resEntry) => resEntry.id === entry.resident
+    );
+
+    if (matchingEntry) {
+      return (
+        matchingEntry.barangay === userBarangay &&
+        (entry.resident
           .toString()
           .toLowerCase()
-          .includes(query.toLowerCase())) ||
-      (entry.evacuation &&
-        entry.evacuation.toString().toLowerCase().includes(query.toLowerCase()))
-  );
+          .includes(query.toLowerCase()) ||
+          matchingEntry.first_name
+            .toLowerCase()
+            .includes(query.toLowerCase()) ||
+          matchingEntry.last_name.toLowerCase().includes(query.toLowerCase()))
+      );
+    }
+
+    return (
+      entry.evacuation &&
+      entry.evacuation.toString().toLowerCase().includes(query.toLowerCase())
+    );
+  });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
