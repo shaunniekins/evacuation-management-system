@@ -27,8 +27,11 @@ SECRET_KEY = 'django-insecure-_64x)^%!axvbhgxm%qt7#tnobo-@c#5^zor$lc05s(9+=otrl3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOST = ['*']
 AUTH_USER_MODEL = 'backend.CustomUser'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Application definition
