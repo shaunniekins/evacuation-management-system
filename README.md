@@ -17,8 +17,6 @@ The system is designed to efficiently manage evacuation procedures during emerge
   - Log-in with the username and password you used for user creation
 - Find import then choose the file to import.
 
-> makita sa settings.py sa backend folder sa evacuation_manage_system directory
-
 #### Change the user and password with the credentials in MySQL setup registration
 
 ```
